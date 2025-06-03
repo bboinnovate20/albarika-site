@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@clerk/clerk-react": "^5.31.8",
+    "@clerk/nextjs": "^6.20.2",
     "@convex-dev/auth": "0.0.87",
     "convex": "^1.24.6",
     "next": "15.3.2",

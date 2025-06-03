@@ -1,6 +1,13 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
+import { ConvexAuthProvider } from "@convex-dev/auth/react";
+import { ConvexProvider, ConvexReactClient, useConvexAuth } from "convex/react";
+import { ClerkProvider, SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+
+// const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+const address = process.env.NEXT_PUBLIC_CONVEX_URL;
+const convex = new ConvexReactClient(address as string);
 
 export default function AdminLayout({
   children,
@@ -8,6 +15,8 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  
+
 
   const navigation = [
     { name: "Dashboard", href: "/admin", icon: "fas fa-home" },
@@ -20,7 +29,11 @@ export default function AdminLayout({
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100">
+
+    <ConvexProvider client={convex}>
+
+      
+      <div className="min-h-screen bg-gray-100">
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="flex items-center justify-between px-6 py-4">
@@ -73,9 +86,16 @@ export default function AdminLayout({
 
         {/* Main Content */}
         <main className="flex-1 p-6">
+          
           {children}
         </main>
       </div>
     </div>
+      
+    
+  </ConvexProvider>
+  
+
+    
   );
 } 

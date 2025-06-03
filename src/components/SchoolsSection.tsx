@@ -3,34 +3,36 @@ import Link from "next/link";
 export default function SchoolsSection() {
   const schools = [
     {
-      id: "programming",
-      title: "Programming Class",
-      description: "Web Development - Basic & Programming",
+      id: "web-dev",
+      title: "Web Development",
+      description: "Master modern web technologies and frameworks",
       icon: "fas fa-code",
       color: "bg-blue-500",
-      courses: ["Introduction to HTML & CSS", "Javascript Programming", "Website Design & Deployment"],
-      price: "₦100,000",
-      duration: "4 months"
+      courses: ["HTML/CSS", "JavaScript", "React", "Node.js"]
     },
     {
-      id: "desktop-publishing-3m",
-      title: "Desktop Publishing",
-      description: "Essential computer skills and design fundamentals",
-      icon: "fas fa-desktop",
-      color: "bg-green-500",
-      courses: ["Microsoft Word", "Microsoft Excel", "Microsoft PowerPoint", "CorelDraw Graphics Design"],
-      price: "₦30,000",
-      duration: "3 months"
-    },
-    {
-      id: "desktop-publishing-6m",
-      title: "Desktop Publishing Plus",
-      description: "Extended desktop publishing with advanced skills",
-      icon: "fas fa-laptop",
+      id: "graphics",
+      title: "Graphics Design",
+      description: "Create stunning visual designs and artwork",
+      icon: "fas fa-paint-brush",
       color: "bg-purple-500",
-      courses: ["Microsoft Word (Advanced)", "Microsoft Excel (Advanced)", "Microsoft PowerPoint (Pro)", "CorelDraw Graphics Design (Complete)"],
-      price: "₦60,000",
-      duration: "6 months"
+      courses: ["Photoshop", "Illustrator", "CorelDraw", "UI/UX"]
+    },
+    {
+      id: "data-science",
+      title: "Data Science",
+      description: "Analyze data and build intelligent systems",
+      icon: "fas fa-chart-line",
+      color: "bg-green-500",
+      courses: ["Python", "Machine Learning", "SQL", "Tableau"]
+    },
+    {
+      id: "cyber-security",
+      title: "Cybersecurity",
+      description: "Protect systems and networks from threats",
+      icon: "fas fa-shield-alt",
+      color: "bg-red-500",
+      courses: ["Network Security", "Ethical Hacking", "Risk Assessment", "Compliance"]
     }
   ];
 
@@ -38,18 +40,18 @@ export default function SchoolsSection() {
     <section id="schools" className="section-padding bg-white">
       <div className="container-custom">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Training Programs</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">Our Learning Schools</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Professional training programs designed to give you practical computer skills and programming expertise
+            Choose from our specialized schools designed to give you expertise in high-demand technology fields
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 ">
           {schools.map((school) => (
             <Link 
               key={school.id}
-              href={`#contact`}
-              className="bg-white shadow-lg rounded-2xl p-6 block hover:shadow-xl transition-shadow duration-300 group border border-gray-100"
+              href={`#programs`}
+              className="shadow-2xl rounded-2xl p-12 block"
             >
               <div className={`w-12 h-12 ${school.color} rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
                 <i className={`${school.icon} text-white text-xl`}></i>
@@ -63,34 +65,23 @@ export default function SchoolsSection() {
                 {school.description}
               </p>
               
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-2xl font-bold text-blue-600">{school.price}</span>
-                <span className="text-sm text-gray-500">({school.duration})</span>
-              </div>
-              
-              <div className="space-y-2 mb-6">
+              <div className="flex flex-wrap gap-1 mb-4">
                 {school.courses.map((course, index) => (
-                  <div key={index} className="flex items-center space-x-2">
-                    <i className="fas fa-check text-green-600 text-sm"></i>
-                    <span className="text-sm text-gray-700">{course}</span>
-                  </div>
+                  <span 
+                    key={index}
+                    className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full"
+                  >
+                    {course}
+                  </span>
                 ))}
               </div>
               
               <div className="flex items-center text-blue-600 text-sm font-medium group-hover:text-blue-700">
-                Enroll Now
+                Learn More
                 <i className="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
               </div>
             </Link>
           ))}
-        </div>
-
-        <div className="text-center mt-12">
-          <p className="text-gray-600 mb-4">Want to discuss a customized training program?</p>
-          <Link href="#contact" className="btn-secondary">
-            <i className="fas fa-users mr-2"></i>
-            Request Custom Training
-          </Link>
         </div>
       </div>
     </section>

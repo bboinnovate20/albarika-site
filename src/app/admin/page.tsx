@@ -1,8 +1,14 @@
 "use client";
 import Link from "next/link";
 import AdminLayout from "./layout";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
 export default function AdminDashboard() {
+  // Get real data from Convex
+  const allReceipts = useQuery(api.receipts.getAllReceipts);
+  const receiptsCount = allReceipts?.length || 0;
+
   const stats = [
     {
       title: "Total Students",
@@ -27,7 +33,7 @@ export default function AdminDashboard() {
     // },
     {
       title: "Receipts Generated",
-      value: "234",
+      value: receiptsCount.toString(),
       change: "+15%",
       icon: "fas fa-receipt",
       color: "bg-orange-500"
@@ -58,7 +64,7 @@ export default function AdminDashboard() {
                 <div>
                   <p className="text-sm text-gray-600 mb-1">{stat.title}</p>
                   <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                  <p className="text-sm text-green-600 mt-1">{stat.change} from last month</p>
+                  
                 </div>
                 <div className={`w-12 h-12 ${stat.color} rounded-lg flex items-center justify-center`}>
                   <i className={`${stat.icon} text-white text-xl`}></i>
@@ -115,23 +121,35 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* Recent Activities */}
-          {/* <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activities</h3>
+          {/* Receipt Statistics */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Receipt Statistics</h3>
             <div className="space-y-4">
-              {recentActivities.map((activity, index) => (
-                <div key={index} className="flex items-center space-x-3">
-                  <div className={`w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center`}>
-                    <i className={`${activity.icon} ${activity.color} text-sm`}></i>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm text-gray-900">{activity.action}</p>
-                    <p className="text-xs text-gray-500">{activity.student} • {activity.time}</p>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Total Receipts</span>
+                <span className="text-2xl font-bold text-gray-900">{receiptsCount}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Student Receipts</span>
+                <span className="text-lg font-semibold text-blue-600">
+                  {allReceipts?.filter(r => r.serviceType === 'training').length || 0}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Customer Receipts</span>
+                <span className="text-lg font-semibold text-purple-600">
+                  {allReceipts?.filter(r => r.serviceType === 'service').length || 0}
+                </span>
+              </div>
+              {receiptsCount > 0 && (
+                <div className="pt-2 border-t">
+                  <div className="text-sm text-gray-500">
+                    Latest Receipt: {allReceipts?.[0]?.receiptNumber || 'N/A'}
                   </div>
                 </div>
-              ))}
+              )}
             </div>
-          </div> */}
+          </div>
         </div>
       </div>
     
