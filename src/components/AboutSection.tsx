@@ -4,23 +4,23 @@ export default function AboutSection() {
   const features = [
     {
       icon: "fas fa-graduation-cap",
-      title: "Expert Instructors",
+      title: "Expert Training",
       description: "Learn from industry professionals with real-world experience"
     },
     {
       icon: "fas fa-laptop-code",
-      title: "Hands-on Learning",
-      description: "Practice with real projects and build your portfolio"
+      title: "Professional Services",
+      description: "Complete computing solutions for individuals and businesses"
     },
     {
-      icon: "fas fa-certificate",
-      title: "Industry Certification",
-      description: "Get recognized certifications that employers value"
+      icon: "fas fa-tools",
+      title: "Technical Support",
+      description: "Computer maintenance, repair, and data management services"
     },
     {
       icon: "fas fa-users",
-      title: "Career Support",
-      description: "Lifetime career guidance and job placement assistance"
+      title: "24/7 Availability",
+      description: "Round-the-clock support for all your computing needs"
     }
   ];
 
@@ -39,13 +39,13 @@ export default function AboutSection() {
               </div>
               
               <h2 className="text-4xl font-bold text-gray-900 leading-tight">
-                Empowering minds through 
-                <span className="gradient-text"> technology education</span>
+                Your Complete 
+                <span className="gradient-text"> Computing Solution Partner</span>
               </h2>
               
               <p className="text-xl text-gray-600 leading-relaxed">
-                For over 8 years, Albarika Computer Centre has been at the forefront of technology education, 
-                transforming lives through comprehensive training programs and professional IT services.
+                For over 8 years, Albarika Computer Centre has been your trusted partner for comprehensive computing solutions. 
+                From professional training programs to essential business services, we provide everything you need under one roof.
               </p>
             </div>
 
@@ -55,8 +55,8 @@ export default function AboutSection() {
                   <i className="fas fa-check text-green-600 text-sm"></i>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">500+ Successful Graduates</h4>
-                  <p className="text-gray-600">Our alumni work in top companies across Nigeria and globally</p>
+                  <h4 className="font-semibold text-gray-900 mb-1">500+ Satisfied Clients</h4>
+                  <p className="text-gray-600">Students, businesses, and individuals trust our quality services</p>
                 </div>
               </div>
               
@@ -65,8 +65,8 @@ export default function AboutSection() {
                   <i className="fas fa-check text-green-600 text-sm"></i>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Industry-Relevant Curriculum</h4>
-                  <p className="text-gray-600">Our courses are designed with input from industry experts</p>
+                  <h4 className="font-semibold text-gray-900 mb-1">Comprehensive Service Range</h4>
+                  <p className="text-gray-600">Training, document services, maintenance, exam prep & more</p>
                 </div>
               </div>
               
@@ -75,16 +75,16 @@ export default function AboutSection() {
                   <i className="fas fa-check text-green-600 text-sm"></i>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Professional IT Services</h4>
-                  <p className="text-gray-600">We also provide consulting and development services to businesses</p>
+                  <h4 className="font-semibold text-gray-900 mb-1">Expert Technical Support</h4>
+                  <p className="text-gray-600">Professional computer maintenance and data management solutions</p>
                 </div>
               </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Link href="#programs" className="btn-primary text-center">
-                <i className="fas fa-book-open mr-2"></i>
-                View Our Programs
+              <Link href="#schools" className="btn-primary text-center">
+                <i className="fas fa-cogs mr-2"></i>
+                View Our Services
               </Link>
               <Link href="#contact" className="btn-secondary text-center">
                 <i className="fas fa-phone mr-2"></i>

@@ -57,9 +57,9 @@ export default function ContactSection() {
               <h3 className="text-2xl font-bold text-gray-900 mb-2">Mrs. Kareem Khadijat</h3>
               <p className="text-lg text-blue-600 font-semibold mb-3">Chief Executive Officer</p>
               <p className="text-gray-600 leading-relaxed">
-                "At Albarika Computer Centre, we are committed to empowering individuals with practical technology skills 
-                that open doors to endless opportunities. Our hands-on approach ensures every student gains real-world 
-                experience and industry-relevant knowledge."
+                "At Albarika Computer Centre, we are your complete computing solution partner. From professional training 
+                programs to essential business services like document processing, exam preparation, and computer maintenance - 
+                we provide quality services that meet all your computing needs under one roof."
               </p>
             </div>
           </div>

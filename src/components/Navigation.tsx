@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 
 interface NavigationProps {
   isMenuOpen: boolean;
@@ -13,11 +14,17 @@ export default function Navigation({ isMenuOpen, setIsMenuOpen }: NavigationProp
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-              <i className="fas fa-graduation-cap text-white text-lg"></i>
+            <div className="w-10 h-10 rounded-lg overflow-hidden">
+              <Image
+                src="/image/logo.jpeg"
+                alt="Albarika Computer Centre Logo"
+                width={40}
+                height={40}
+                className="w-full h-full object-cover"
+              />
             </div>
             <div>
-              <span className="text-xl font-bold text-gray-900">Albarika</span>
+              <span className="text-xl font-bold text-gray-900 uppercase tracking-tighter">Albarika</span>
               <span className="text-sm text-gray-600 block -mt-1">Computer Centre</span>
             </div>
           </div>
@@ -25,11 +32,12 @@ export default function Navigation({ isMenuOpen, setIsMenuOpen }: NavigationProp
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-x-8">
             <Link href="/" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Home</Link>
-            <Link href="#schools" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Our Schools</Link>
-            <Link href="#programs" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Programs</Link>
-            <Link href="#masterclasses" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Masterclasses</Link>
+            <Link href="#schools" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Training</Link>
+            <Link href="#services" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Services</Link>
             <Link href="#about" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">About</Link>
+            <Link href="/admin" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Admin</Link>
             <Link href="#contact" className="btn-primary">Get Started</Link>
+            
           </div>
 
           {/* Mobile menu button */}
@@ -60,21 +68,14 @@ export default function Navigation({ isMenuOpen, setIsMenuOpen }: NavigationProp
                 className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Our Schools
+                Training
               </Link>
               <Link
-                href="#programs"
+                href="#services"
                 className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Programs
-              </Link>
-              <Link
-                href="#masterclasses"
-                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md font-medium"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Masterclasses
+                Services
               </Link>
               <Link
                 href="#about"

@@ -38,9 +38,9 @@ export default function SchoolsSection() {
     <section id="schools" className="section-padding bg-white">
       <div className="container-custom">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Our Training Programs</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">Training Programs</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Choose from our specialized programs designed to give you practical computer skills and programming expertise
+            Professional training programs designed to give you practical computer skills and programming expertise
           </p>
         </div>
 
@@ -83,6 +83,14 @@ export default function SchoolsSection() {
               </div>
             </Link>
           ))}
+        </div>
+
+        <div className="text-center mt-12">
+          <p className="text-gray-600 mb-4">Want to discuss a customized training program?</p>
+          <Link href="#contact" className="btn-secondary">
+            <i className="fas fa-users mr-2"></i>
+            Request Custom Training
+          </Link>
         </div>
       </div>
     </section>

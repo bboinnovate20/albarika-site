@@ -3,10 +3,10 @@ import AboutSection from "@/components/AboutSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
-import MasterclassesSection from "@/components/MasterclassesSection";
 import Navigation from "@/components/Navigation";
 import ProgramsSection from "@/components/ProgramsSection";
 import SchoolsSection from "@/components/SchoolsSection";
+import ServicesSection from "@/components/ServicesSection";
 import StatsSection from "@/components/StatsSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import Image from "next/image";
@@ -22,12 +22,11 @@ export default function Home() {
       <HeroSection />
       
       <main>
+        <ServicesSection />
         <SchoolsSection />
-        {/* <ProgramsSection /> */}
         <AboutSection />
         <TestimonialsSection />
         <ContactSection />
-        {/* <MasterclassesSection /> */}
         {/* <StatsSection /> */}
       </main>
 

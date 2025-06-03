@@ -8,8 +8,18 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Albarika Computer Centre - Your Learning Path to Endless Growth",
-  description: "Professional IT solutions, training, and services. From web development to graphics design, we empower you with technology skills.",
+  title: "Albarika Computer Centre - Your Gateway to Quality Computing Services",
+  description: "Comprehensive computing solutions and technology education. From professional training programs to document services, computer maintenance, and exam preparation - your complete computing partner.",
+  icons: {
+    icon: "/image/logo.jpeg",
+    shortcut: "/image/logo.jpeg",
+    apple: "/image/logo.jpeg",
+  },
+  openGraph: {
+    title: "Albarika Computer Centre - Your Gateway to Quality Computing Services",
+    description: "Comprehensive computing solutions and technology education. From professional training programs to document services, computer maintenance, and exam preparation - your complete computing partner.",
+    images: ["/image/logo.jpeg"], 
+  },
 };
 
 export default function RootLayout({
