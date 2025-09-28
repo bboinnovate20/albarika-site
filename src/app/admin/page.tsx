@@ -7,12 +7,14 @@ import { api } from "../../../convex/_generated/api";
 export default function AdminDashboard() {
   // Get real data from Convex
   const allReceipts = useQuery(api.receipts.getAllReceipts);
+  const allStudent = useQuery(api.student.getAllStudents);
   const receiptsCount = allReceipts?.length || 0;
+  const studentCount = allStudent?.length || 0;
 
   const stats = [
     {
       title: "Total Students",
-      value: "156",
+      value: receiptsCount.toString(),
       change: "+12%",
       icon: "fas fa-graduation-cap",
       color: "bg-blue-500"

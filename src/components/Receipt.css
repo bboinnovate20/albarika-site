@@ -1,0 +1,322 @@
+        #receipt-new * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            padding: 10mm;
+            line-height: 1.4;
+        }
+
+        .a4-container {
+            width: 210mm;
+            height: 297mm;
+            margin: 0 auto;
+            background: white;
+            box-shadow: none;
+            position: relative;
+            overflow: hidden;
+            max-width: none;
+            max-height: none;
+            padding: 0;
+            border: 1px solid red;
+        }
+
+        .letterhead-image {
+            width: 100%;
+            
+            height: auto;
+            display: block;
+            max-height: 80mm;
+            object-fit: contain;
+        }
+
+        .receipt-content {
+            padding: 5mm 5mm 5mm 5mm;
+        }
+
+        .receipt-header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #2c3e50;
+            padding-bottom: 15px;
+        }
+
+        .receipt-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .receipt-number {
+            font-size: 14px;
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 120px;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .student-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 5px solid #3498db;
+        }
+
+        .student-photo {
+            text-align: center;
+        }
+
+        .photo-frame {
+            width: 120px;
+            height: 150px;
+            border: 3px solid #34495e;
+            border-radius: 8px;
+            background: #ecf0f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7f8c8d;
+            font-size: 12px;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .info-section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: #2c3e50;
+            font-weight: 500;
+            padding: 8px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .info-value.highlight {
+            font-size: 16px;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+
+        .payment-section {
+            background: linear-gradient(135deg, #74b9ff15, #0984e315);
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #74b9ff;
+            margin: 20px 0;
+        }
+
+        .amount-display {
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .total-amount {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2d3436;
+            margin: 10px 0;
+        }
+
+        .currency {
+            font-size: 16px;
+            color: #636e72;
+            font-weight: 500;
+        }
+
+        .payment-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .status-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 25px 0;
+            padding: 15px;
+            background: #dff0d8;
+            border: 1px solid #d6e9c6;
+            border-radius: 5px;
+        }
+
+        .status-label {
+            font-weight: bold;
+            color: #3c763d;
+        }
+
+        .status-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #3c763d;
+            text-transform: uppercase;
+        }
+
+        .footer-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+        }
+
+        .signature-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .signature-box {
+            text-align: center;
+        }
+
+        .signature-line {
+            border-bottom: 2px solid #2c3e50;
+            margin: 30px 0 10px 0;
+            height: 40px;
+        }
+
+        .signature-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .notes-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #f39c12;
+        }
+
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 80px;
+            color: rgba(52, 152, 219, 0.05);
+            font-weight: bold;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .a4-container {
+                width: 210mm;
+                height: 297mm;
+                margin: 0;
+                box-shadow: none;
+                padding: 0;
+            }
+            
+            @page {
+                size: A4;
+                margin: 0;
+            }
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 5mm;
+            }
+            
+            .a4-container {
+                width: 100%;
+                height: auto;
+                min-height: 100vh;
+            }
+            
+            .receipt-content {
+                padding: 15px;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .student-photo {
+                order: -1;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .payment-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .signature-area {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #fff !important;
+        }
+    

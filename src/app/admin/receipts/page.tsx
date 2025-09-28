@@ -5,8 +5,10 @@ import { useSearchParams } from "next/navigation";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import ReceiptDownload from "../../../components/ReceiptDownload";
+import { ConvexError } from "convex/values";
+import Receipt, { StudentReceipt } from "@/components/ReceiptInfo";
+import { Id } from "../../../../convex/_generated/dataModel";
 
-// Define types for better TypeScript support
 interface ConvexReceipt {
   _id: string;
   receiptNumber: string;
@@ -36,10 +38,13 @@ interface DisplayReceipt {
 export default function ReceiptsPage() {
   const searchParams = useSearchParams();
   const receiptType = searchParams?.get('type') || 'student';
+  const queryStudentId = searchParams?.get('studentId') || '';
   
   const [activeTab, setActiveTab] = useState("generate");
   const [currentReceiptType, setCurrentReceiptType] = useState(receiptType);
+  const [receiptId, setReceiptId] = useState<Id<"studentReceipts"> | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
+  const [receiptInfo, setReceiptInfo] = useState<StudentReceipt>();
   const [formData, setFormData] = useState({
     customerName: "",
     email: "",
@@ -48,18 +53,57 @@ export default function ReceiptsPage() {
     amount: "",
     paymentMethod: "cash",
     description: "",
-    studentId: "",
+    studentId: queryStudentId,
     program: ""
   });
+
+  // Id<"studentReceipts">
 
   // Convex hooks
   const createReceipt = useMutation(api.receipts.createReceipt);
   const generateReceiptNumber = useQuery(api.receipts.generateReceiptNumber);
+  const data = useQuery(api.receipts.getReceiptByIdWithStudentInfo, receiptId ? { receiptId } : "skip");
+  
   const allReceipts = useQuery(api.receipts.getAllReceipts);
+  
+  const studentData = useQuery(
+    api.student.getStudentByStudentId,
+    formData.studentId && currentReceiptType === 'student' 
+      ? { studentId: formData.studentId }
+      : "skip"
+  );
 
   useEffect(() => {
     setCurrentReceiptType(receiptType);
-  }, [receiptType]);
+    // Update studentId from query params if available
+    if (queryStudentId && queryStudentId !== formData.studentId) {
+      setFormData(prev => ({
+        ...prev,
+        studentId: queryStudentId
+      }));
+    }
+  }, [receiptType, queryStudentId]);
+
+  // Auto-populate form when student data is fetched
+  useEffect(() => {
+    if (studentData && currentReceiptType === 'student') {
+      // Find matching service based on program
+      const matchingService = studentServices.find(service => 
+        service.label.toLowerCase().includes(studentData.program.toLowerCase()) ||
+        studentData.program.toLowerCase().includes(service.value.replace('-', ' '))
+      );
+
+      setFormData(prev => ({
+        ...prev,
+        customerName: studentData.name || prev.customerName,
+        email: studentData.email || prev.email,
+        phone: studentData.phone || prev.phone,
+        program: studentData.program || prev.program,
+        service: matchingService?.value || prev.service,
+        amount: matchingService?.amount.toString() || prev.amount
+      }));
+    }
+  }, [studentData, currentReceiptType]);
 
   // Convert Convex receipts to display format
   const receipts: DisplayReceipt[] = allReceipts?.map((receipt: ConvexReceipt) => ({
@@ -132,6 +176,7 @@ export default function ReceiptsPage() {
 
   const handleGenerateReceipt = async (e: React.FormEvent) => {
     e.preventDefault();
+
     setIsLoading(true);
     
     try {
@@ -142,13 +187,13 @@ export default function ReceiptsPage() {
       const selectedService = services.find(s => s.value === formData.service);
       const serviceType = currentReceiptType === 'student' ? 'training' : 'service';
       
-      await createReceipt({
+      const receiptInfo = await createReceipt({
+        studentID: formData.studentId || `CUST-${Date.now()}`, // Use provided studentId or generate one for customers
         studentName: formData.customerName,
         studentEmail: formData.email || undefined,
         studentPhone: formData.phone || undefined,
         receiptNumber: generateReceiptNumber,
         amount: parseFloat(formData.amount),
-        currency: "NGN",
         paymentMethod: formData.paymentMethod,
         serviceType,
         programName: selectedService?.label || formData.service,
@@ -156,7 +201,11 @@ export default function ReceiptsPage() {
       });
 
       alert("Receipt generated and saved successfully!");
+      console.log("top level", data);
+      console.log("top level receipt", receiptInfo);
       
+      // generateReceipt(receiptInfo.receiptId);
+      generateReceipt(receiptInfo);
       // Reset form
       setFormData({
         customerName: "",
@@ -166,423 +215,72 @@ export default function ReceiptsPage() {
         amount: "",
         paymentMethod: "cash",
         description: "",
-        studentId: "",
+        studentId: queryStudentId, // Keep query param value when clearing
         program: ""
       });
+      setReceiptId(undefined);
     } catch (error) {
-      console.error("Error generating receipt:", error);
-      alert("Error generating receipt. Please try again.");
+      const message = error instanceof ConvexError ? error.data as { message: string } : "Unexpected error occured";
+      // console.error("Error generating receipt:", error?.data);
+      console.log(message);
+      alert(message);
+      
     } finally {
       setIsLoading(false);
     }
   };
 
+  function generateReceipt(data: any) {
+      console.log(`receipt to update ${data}`);
+      const studentInfo = {
+        studentId: data?.student?._id,
+        studentName: data?.student?.name,
+        studentEmail: data?.student?.email,
+        studentPhone: data?.student?.guardianPhoneNumber,
+        
+        // Receipt details
+        receiptNumber: data?.receipt?.receiptNumber,
+        receiptDate: data?.receipt?.receiptDate,
+        dueDate: data?.receipt?.dueDate,
+        
+        // Payment information
+        amount: data?.receipt?.amount,
+        amountPaid: data?.receipt?.amountPaid,
+
+        paymentMethod: data?.receipt?.paymentMethod,
+        
+        // Service/Program details
+        serviceType: data?.receipt?.serviceType, 
+        programName: data?.receipt?.programName,
+        
+        // Academic/Session information
+        session: data?.receipt?.session, // e.g., "2024/2025"
+        
+        // Administrative
+        issuedBy: data?.receipt?.issuedBy,
+        notes: data?.receipt?.notes,
+        isActive: true, 
+        
+        // Timestamps
+        createdAt: data?.receipt?.createdAt
+      };
+
+      setReceiptInfo(studentInfo as StudentReceipt);
+  }
+
+
   return (
+    <>
+    <div className="w-full">
+        <Receipt />
+    </div>
+        {/* {receiptInfo && <div>
+          <Receipt receiptInfo={receiptInfo}/>
+          </div>} */}
+  
     
-      <div className="space-y-6">
-        {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Receipt Management</h1>
-          <p className="text-gray-600 mt-2">Generate new receipts and manage transaction records</p>
-        </div>
-
-        {/* Receipt Type Selector */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Receipt Type</h3>
-          <div className="flex space-x-4">
-            <button
-              onClick={() => setCurrentReceiptType('student')}
-              className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                currentReceiptType === 'student'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              <i className="fas fa-graduation-cap mr-2"></i>
-              Student Receipt
-            </button>
-            <button
-              onClick={() => setCurrentReceiptType('customer')}
-              className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                currentReceiptType === 'customer'
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              <i className="fas fa-receipt mr-2"></i>
-              Customer Receipt
-            </button>
-          </div>
-        </div>
-
-        {/* Tabs */}
-        <div className="border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8">
-            <button
-              onClick={() => setActiveTab("generate")}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                activeTab === "generate"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              }`}
-            >
-              <i className="fas fa-plus mr-2"></i>
-              Generate {currentReceiptType === 'student' ? 'Student' : 'Customer'} Receipt
-            </button>
-            <button
-              onClick={() => setActiveTab("transactions")}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                activeTab === "transactions"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              }`}
-            >
-              <i className="fas fa-list mr-2"></i>
-              All Receipt Transactions ({receipts.length})
-            </button>
-          </nav>
-        </div>
-
-        {/* Tab Content */}
-        {activeTab === "generate" && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">
-                Generate New {currentReceiptType === 'student' ? 'Student' : 'Customer'} Receipt
-              </h2>
-              <p className="text-gray-600 mt-1">
-                Fill in the details to create a {currentReceiptType} payment receipt
-              </p>
-              {generateReceiptNumber && (
-                <p className="text-sm text-blue-600 mt-2">
-                  Next Receipt Number: {generateReceiptNumber}
-                </p>
-              )}
-            </div>
-            
-            <form onSubmit={handleGenerateReceipt} className="p-6 space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {currentReceiptType === 'student' ? 'Student Name' : 'Customer Name'} *
-                  </label>
-                  <input
-                    type="text"
-                    name="customerName"
-                    value={formData.customerName}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder={`Enter ${currentReceiptType} full name`}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="customer@email.com"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone Number *
-                  </label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="08012345678"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {currentReceiptType === 'student' ? 'Training Program' : 'Service/Product'} *
-                  </label>
-                  <select
-                    name="service"
-                    value={formData.service}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="">Select a {currentReceiptType === 'student' ? 'program' : 'service'}</option>
-                    {services.map((service) => (
-                      <option key={service.value} value={service.value}>
-                        {service.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Amount (₦) *
-                  </label>
-                  <input
-                    type="number"
-                    name="amount"
-                    value={formData.amount}
-                    onChange={handleInputChange}
-                    required
-                    min="0"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="0.00"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Payment Method *
-                  </label>
-                  <select
-                    name="paymentMethod"
-                    value={formData.paymentMethod}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="cash">Cash</option>
-                    <option value="bank-transfer">Bank Transfer</option>
-                    <option value="pos">POS</option>
-                    <option value="mobile-money">Mobile Money</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description/Notes
-                </label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  rows={3}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Additional notes or service details..."
-                ></textarea>
-              </div>
-
-              <div className="flex space-x-4">
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
-                >
-                  <i className={`fas ${isLoading ? 'fa-spinner fa-spin' : 'fa-receipt'} mr-2`}></i>
-                  {isLoading ? 'Generating...' : 'Generate Receipt'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFormData({
-                    customerName: "",
-                    email: "",
-                    phone: "",
-                    service: "",
-                    amount: "",
-                    paymentMethod: "cash",
-                    description: "",
-                    studentId: "",
-                    program: ""
-                  })}
-                  className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold px-6 py-3 rounded-lg transition-colors"
-                >
-                  <i className="fas fa-eraser mr-2"></i>
-                  Clear Form
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
-
-        {activeTab === "transactions" && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900">Receipt Transactions</h2>
-                  <p className="text-gray-600 mt-1">List of all generated receipts and payment records</p>
-                </div>
-                <div className="text-sm text-gray-500">
-                  Total: {receipts.length} receipts
-                </div>
-              </div>
-            </div>
-
-            <div className="overflow-x-auto">
-              {receipts.length === 0 ? (
-                <div className="p-8 text-center">
-                  <i className="fas fa-receipt text-gray-300 text-4xl mb-4"></i>
-                  <p className="text-gray-600">No receipts found. Generate your first receipt to get started.</p>
-                </div>
-              ) : (
-                <>
-                  {/* Mobile view - Card layout */}
-                  <div className="block md:hidden space-y-4 p-4">
-                    {receipts.map((receipt: DisplayReceipt) => (
-                      <div key={receipt.id} className="bg-gray-50 rounded-lg p-4 border">
-                        <div className="flex justify-between items-start mb-3">
-                          <div>
-                            <div className="font-medium text-gray-900">{receipt.id}</div>
-                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full mt-1 ${
-                              receipt.type === 'Student' 
-                                ? 'bg-blue-100 text-blue-800' 
-                                : 'bg-purple-100 text-purple-800'
-                            }`}>
-                              {receipt.type}
-                            </span>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-sm font-semibold text-gray-900">{receipt.amount}</div>
-                            <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 mt-1">
-                              {receipt.status}
-                            </span>
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2 text-sm">
-                          <div>
-                            <span className="text-gray-500">Customer: </span>
-                            <span className="text-gray-900">{receipt.customerName}</span>
-                          </div>
-                          <div>
-                            <span className="text-gray-500">Service: </span>
-                            <span className="text-gray-900">{receipt.service}</span>
-                          </div>
-                          <div>
-                            <span className="text-gray-500">Payment: </span>
-                            <span className="text-gray-900">{receipt.paymentMethod}</span>
-                          </div>
-                          <div>
-                            <span className="text-gray-500">Date: </span>
-                            <span className="text-gray-900">{receipt.date}</span>
-                            <span className="text-gray-500 ml-2">{receipt.time}</span>
-                          </div>
-                        </div>
-                        
-                        <div className="flex justify-end space-x-3 mt-4 pt-3 border-t">
-                          <button className="text-blue-600 hover:text-blue-900 p-2">
-                            <i className="fas fa-eye"></i>
-                          </button>
-                          <ReceiptDownload 
-                            receipt={convertToReceiptData(allReceipts?.find(r => r.receiptNumber === receipt.id)!)}
-                          />
-                          <button className="text-purple-600 hover:text-purple-900 p-2">
-                            <i className="fas fa-print"></i>
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Desktop view - Table layout */}
-                  <div className="hidden md:block">
-                    <table className="w-full min-w-full">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Receipt ID
-                          </th>
-                          <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Type
-                          </th>
-                          <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Customer/Student
-                          </th>
-                          <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Service/Program
-                          </th>
-                          <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Amount
-                          </th>
-                          <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Date & Time
-                          </th>
-                          <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Payment Method
-                          </th>
-                          <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Status
-                          </th>
-                          <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Actions
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {receipts.map((receipt: DisplayReceipt) => (
-                          <tr key={receipt.id} className="hover:bg-gray-50">
-                            <td className="px-3 lg:px-6 py-4 whitespace-nowrap">
-                              <div className="text-xs lg:text-sm font-medium text-gray-900">{receipt.id}</div>
-                            </td>
-                            <td className="px-3 lg:px-6 py-4 whitespace-nowrap">
-                              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                receipt.type === 'Student' 
-                                  ? 'bg-blue-100 text-blue-800' 
-                                  : 'bg-purple-100 text-purple-800'
-                              }`}>
-                                {receipt.type}
-                              </span>
-                            </td>
-                            <td className="px-3 lg:px-6 py-4 whitespace-nowrap">
-                              <div className="text-xs lg:text-sm text-gray-900 truncate max-w-[100px] lg:max-w-none">
-                                {receipt.customerName}
-                              </div>
-                            </td>
-                            <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900 truncate max-w-[150px]">{receipt.service}</div>
-                            </td>
-                            <td className="px-3 lg:px-6 py-4 whitespace-nowrap">
-                              <div className="text-xs lg:text-sm font-semibold text-gray-900">{receipt.amount}</div>
-                            </td>
-                            <td className="hidden xl:table-cell px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">{receipt.date}</div>
-                              <div className="text-xs text-gray-500">{receipt.time}</div>
-                            </td>
-                            <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">{receipt.paymentMethod}</div>
-                            </td>
-                            <td className="px-3 lg:px-6 py-4 whitespace-nowrap">
-                              <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                {receipt.status}
-                              </span>
-                            </td>
-                            <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
-                              <div className="flex space-x-1 lg:space-x-2">
-                                <button className="text-blue-600 hover:text-blue-900 p-1">
-                                  <i className="fas fa-eye text-xs lg:text-sm"></i>
-                                </button>
-                                <ReceiptDownload 
-                                  receipt={convertToReceiptData(allReceipts?.find(r => r.receiptNumber === receipt.id)!)}
-                                />
-                                <button className="text-purple-600 hover:text-purple-900 p-1">
-                                  <i className="fas fa-print text-xs lg:text-sm"></i>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
+    
+    </>
     
   );
 } 
