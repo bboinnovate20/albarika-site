@@ -62,15 +62,20 @@ const Receipt = () => {
     const amountElement = document.getElementById("amount-payment");
     
     if (amountElement) {
-      amountElement.innerText = formatNaira(receiptInfo.amount);
+      amountElement.innerText = "";
+      // formatNaira("");
+      // receiptInfo
     }
 
-    const receiptDate = new Date(receiptInfo.receiptDate);
+    const receiptDate = new Date();
+    // receiptInfo.receiptDate
     const formattedDate = receiptDate.toLocaleDateString('en-GB', {
       day: '2-digit',
       month: '2-digit', 
       year: 'numeric'
     });
+
+    
 
     const formattedDateTime = receiptDate.toLocaleDateString('en-GB', {
       day: '2-digit',
@@ -93,7 +98,8 @@ const Receipt = () => {
     // Also update the amount paid element
     const amountPaidElement = document.getElementById('amount');
     if (amountPaidElement) {
-      amountPaidElement.innerText = formatNaira(receiptInfo.amountPaid || receiptInfo.amount);
+      amountPaidElement.innerText = "";
+      // formatNaira(receiptInfo.amountPaid || receiptInfo.amount);
     }
 
   }

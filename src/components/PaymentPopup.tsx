@@ -53,7 +53,7 @@ export default function PaymentPopup({
         studentPhone: studentData.phone,
         receiptNumber: generateReceiptNumber || `ALB-RECEIPT-${Date.now()}`,
         amount: parseFloat(paymentData.amount),
-        currency: "NGN",
+        // currency: "NGN",
         paymentMethod: paymentData.paymentMethod,
         serviceType: paymentData.serviceType,
         programName: studentData.program,
