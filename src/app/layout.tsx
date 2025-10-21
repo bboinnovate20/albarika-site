@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { PT_Sans } from "next/font/google";
 import "./globals.css";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
+const inter = PT_Sans({
+  weight: ["400" , "700", "400", "700"]
 });
 
 export const metadata: Metadata = {
@@ -37,7 +36,9 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} antialiased`}>
-      <ConvexClientProvider>{children}</ConvexClientProvider>
+      {/* <ConvexClientProvider> */}
+        {children}
+        {/* </ConvexClientProvider> */}
       </body>
     </html>
   );
