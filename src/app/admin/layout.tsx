@@ -13,11 +13,9 @@ const address = process.env.NEXT_PUBLIC_CONVEX_URL;
 const convex = new ConvexReactClient(address as string);
 
 export default function AdminLayout({
-  children,
-  title
+  children
 }: {
   children: React.ReactNode;
-  title: string
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   

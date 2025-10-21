@@ -4,7 +4,8 @@ import "./globals.css";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 
 const inter = PT_Sans({
-  weight: ["400" , "700", "400", "700"]
+  weight: ["400" , "700"],
+   subsets: ["latin"], 
 });
 
 export const metadata: Metadata = {

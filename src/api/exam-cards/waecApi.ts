@@ -2,13 +2,13 @@
 import axios from "axios";
 import { ResponseApi, Waec } from "./type";
 import {EXAM_CARDS_API_KEY, EXAM_CARDS_BASE_URL } from "@/lib/constant";
-import { apiClient } from "./apiClient";
+import { apiClientExam } from "./apiClient";
 
 
 export async function buy({quantity=1}: {quantity: number}): Promise<ResponseApi> {
   try {
 
-    const response = await apiClient.post("/exam-card/buy", {
+    const response = await apiClientExam.post("/exam-card/buy", {
       "card_type_id": "1",
       quantity: quantity
     });

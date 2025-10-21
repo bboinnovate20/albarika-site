@@ -6,7 +6,7 @@ import FullScreenLoader from '@/components/LoadingModal';
 import { Wallet } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 
-export default function AdminHome(title="Dashboard") {
+export default function AdminHome() {
   const [loading, setLoading] = useState<boolean>(false);
   
   const getAccountInfo = async () => {
