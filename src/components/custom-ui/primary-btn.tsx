@@ -19,7 +19,7 @@ export default function PrimaryBtn({
   return (
     <Button
       disabled={isLoading || disabled}
-      className={`mt-5 font-bold text-lg p-6 flex items-center gap-2 ${className ?? ""}`}
+      className={`mt-5 font-bold text-lg p-6 flex items-center gap-2 hover:bg-blue-600 ${className ?? ""}`}
       {...props}>
       {isLoading ? (
         <span className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />

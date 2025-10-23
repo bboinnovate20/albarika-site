@@ -14,6 +14,8 @@ export function middleware(request: NextRequest) {
   // Check for auth token in cookies
   const token = request.cookies.get('auth_token')?.value;
   
+  
+  
   // Redirect to login if no token and accessing protected /admin routes
   if (!token && pathname.startsWith('/admin')) {
     return NextResponse.redirect(new URL('auth/admin/login', request.url));

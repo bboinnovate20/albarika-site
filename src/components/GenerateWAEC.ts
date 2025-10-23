@@ -40,6 +40,9 @@ export function generateWAECCardsPDF(cards: WAECCard[]) {
   link.download = filename;
   link.click();
   URL.revokeObjectURL(url);
+
+  return true;
+
 }
 
 
