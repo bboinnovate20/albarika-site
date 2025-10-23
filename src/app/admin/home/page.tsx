@@ -17,6 +17,8 @@ export default function AdminHome() {
   });
   
   const getAccountInfo = async () => {
+    console.log(process.env.NEXT_PUBLIC_EXAM_CARD_BASE_URL);
+    console.log(process.env.NEXT_PUBLIC_BASE_URL);
     try{
       setLoading(true);
       const accountInfo = await examApi.accountDetails();
