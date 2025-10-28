@@ -64,7 +64,7 @@ apiClientExam.interceptors.response.use(
       // Option 1: Redirect to login page (for pages)
        if (typeof window !== "undefined") {
         toast.error("Session expired. Please log in again.");
-        window.location.href = "/auth/admin/login";
+        // window.location.href = "/auth/admin/login";
       }
       // Option 2 (App Router): use redirect('/admin/login') in server components
       // or import { useRouter } from 'next/navigation' for client components
