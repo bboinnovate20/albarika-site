@@ -11,6 +11,7 @@ import HeaderAdmin from '@/components/HeaderAdmin';
 import { handleGeneratePdf } from '@/components/HTMLToPDF'
 import FullScreenLoader from '@/components/LoadingModal';
 import LoadingModal from '@/components/LoadingModal';
+import { WAECPaginatedTable } from '@/components/PaginatedTable';
 import { Button } from '@/components/ui/button'
 import WAECCard from '@/components/WAECCard'
 import {generateMultipleWAECCardsHTML, generateWAECCardHTML } from '@/lib/convert-waec-html'
@@ -26,50 +27,52 @@ export default function WAECVerification() {
    const [globalLoading, setGlobalLoading] = useState<boolean>(false);
    const [allCards, setAllCards] = useState<ExamCardsData[]>([]);
 
-   const handleDownload = () => {
-    setLoading(true);
-    const html = generateWAECCardsPDF([
-        {serialNumber: "WRN1234567890455", pin: "555123456789456"},
-        {serialNumber: "WRN1234567890455", pin: "555123456789456"}
-    ])
-    setLoading(false);
-    toast.success("Sucessfully generated");
-  }
+//    const handleDownload = () => {
+//     setLoading(true);
+//     const html = generateWAECCardsPDF([
+//         {serialNumber: "WRN1234567890455", pin: "555123456789456"},
+//         {serialNumber: "WRN1234567890455", pin: "555123456789456"}
+//     ],  )
+//     setLoading(false);
+//     toast.success("Sucessfully generated");
+//   }
 
 
-   const handleDownloadSingle = (card: ScratchCard) => {
-    console.log(card, "card");
+   const handleDownloadSingle = async (card: ScratchCard, reference: string) => {
+    
     try {
+        // console.log('downloading');
         setGlobalLoading(true);
         // const {serialNumber, pin} = card;
-        const html = generateWAECCardsPDF([card])
+        const html = await generateWAECCardsPDF([card], reference)
 
         setGlobalLoading(false);
         toast.success("Sucessfully generated");
         
     } catch (error) {
-        
+        setGlobalLoading(false);
     }
   }
 
   const purchaseACard = async () => {
     setLoading(true)
     const info = await examApi.purchasedWAECCard();
+    getAllCard();
     toast.success("Successfully purchased WAEC");
 
     const cards = info?.data?.cards[0];
-    setLoading(false)
-    console.log("Success");
+    
     handleDownloadSingle({
         serialNumber: cards.serial_no,
         pin:cards.pin
-    });
+    }, info?.data?.reference);
+    setLoading(false)
   }
 
   const getAllCard = async () =>{
     const info = await examApi.purchasedWAECExamList();
     const data: any[] = info?.data;
-    console.log(data);
+    // console.log(data);
 
     setAllCards(data);
   }
@@ -102,8 +105,10 @@ export default function WAECVerification() {
         {/* <CustomDialogue message='Are you sure you want to purchase WAEC Card?' /> */}
             
             <h1 className='text-2xl font-bold mt-6 mb-3'>Transactions</h1>
-
-            <table className=''>
+            <WAECPaginatedTable 
+            data={allCards} 
+            onDownload={handleDownloadSingle}/>
+            {/* <table className=''>
                 <thead className='border border-black bg-gray-200'>
                     <tr>
                         <th className='border border-black p-2'>Date</th>
@@ -123,14 +128,14 @@ export default function WAECVerification() {
                             <td  className='border border-black p-2 '>{getExamType(card.exam_card_id)}</td>
                             <td className='border border-black p-2'> 
                                 <div className='flex justify-center gap-3'>
-                                <Download onClick={() => handleDownloadSingle({ serialNumber: card.serial_number, pin: card.pin})}/> 
+                                <Download onClick={() => handleDownloadSingle({ serialNumber: card.serial_number, pin: card.pin}, card.reference)}/> 
                                 <Status status='active'/>
                                 </div>
                             </td>
                         </tr>
                     )}
                 </tbody>
-            </table>
+            </table> */}
             {/* <div className='flex-grow ring'> */}
                 
                 {/* <div className='flex overflow-hidden border border-b-1 border-b-black bg-gray-200'>

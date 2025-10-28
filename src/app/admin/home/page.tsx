@@ -4,6 +4,7 @@ import { examApi } from '@/api/exam-cards/examsApi';
 import { ExamCardWalletDetails } from '@/api/exam-cards/type';
 import HeaderAdmin from '@/components/HeaderAdmin';
 import FullScreenLoader from '@/components/LoadingModal';
+import { WAEC_EXAM_ACCOUNT_NAME, WAEC_EXAM_ACCOUNT_NO, WAEC_EXAM_BANK_NAME } from '@/lib/constant';
 import { currencyConvert } from '@/lib/currency-convert';
 import { Wallet } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
@@ -23,6 +24,7 @@ export default function AdminHome() {
       setLoading(true);
       const accountInfo = await examApi.accountDetails();
       console.log(accountInfo);
+      
       if(accountInfo.data != undefined) {
         setAccountInfo(accountInfo.data[0] as ExamCardWalletDetails);
       }
@@ -56,9 +58,10 @@ export default function AdminHome() {
           </div>
           </div>
           <div className='my-4 ring-green-900 rounded p-2 bg-green-100'>
-            <h2 className='font-bold'>To fund Wallet</h2>
-            <p>Account Name: {accountInfo.firstname} {accountInfo.lastname}</p>
-            <p>Account Number: 9894878585995</p>
+            <h2 className='font-bold'>To fund Wallet: SCRATCH CARD</h2>
+            <p>Account Name: {WAEC_EXAM_ACCOUNT_NAME}</p>
+            <p>Account Number: {WAEC_EXAM_ACCOUNT_NO}</p>
+            <p>Bank Account: {WAEC_EXAM_BANK_NAME}</p>
           </div>
         </div>
     </div>

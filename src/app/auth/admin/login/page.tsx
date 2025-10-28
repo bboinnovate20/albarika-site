@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Lock } from 'lucide-react';
 import PrimaryBtn from '@/components/custom-ui/primary-btn';
 import FormInput from '@/components/custom-ui/input';
+import { toast } from 'react-toastify';
 
 export default function AdminLogin() {
   const [username, setEmail] = useState('');
@@ -37,8 +38,7 @@ export default function AdminLogin() {
       console.log("error info", err);
       setError('An error occurred. Please try again.');
     } finally {
-
-      console.log("finally")
+      toast.success("Successfully Logged in, redirecting");
       setLoading(false);
     }
   };
