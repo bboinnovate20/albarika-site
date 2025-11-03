@@ -8,6 +8,23 @@ export function AppSideBar({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   
+  const handleLogout = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+      });
+      
+      if (response.ok) {
+        router.push('/auth/admin/login');
+        router.refresh(); // Refresh to clear any cached data
+      }
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+  
   const sideBarList = [
     { name: "Home", link: "/home" },
     { name: "WAEC Verification", link: "/exam-cards" },
@@ -73,12 +90,12 @@ export function AppSideBar({ children }: { children: React.ReactNode }) {
 
         {/* Logout button at bottom */}
                <div className="p-4 border-t border-blue-800">
-          <form action="/api/auth/logout" method="POST">
+           <form onSubmit={handleLogout}>
             <button
               type="submit"
               className="w-full flex items-center justify-center gap-3 p-3 font-semibold 
-                       transition-all tracking-wide hover:bg-blue-950 
-                       text-white rounded-md bg-blue-800"
+                        transition-all tracking-wide hover:bg-blue-950 
+                        text-white rounded-md bg-blue-800"
             >
               <LogOut size={20} />
               <span>Logout</span>
