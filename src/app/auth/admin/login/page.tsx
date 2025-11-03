@@ -28,7 +28,7 @@ export default function AdminLogin() {
       });
 
       const data = await response.json();
-      console.log(response.ok, data.success)
+      console.log('data success', response.ok, data.success, data)
       if (response.ok && data.success) {
         router.push('/admin');
       } else {
@@ -38,8 +38,6 @@ export default function AdminLogin() {
       console.log("error info", err);
       setError('An error occurred. Please try again.');
     } finally {
-      toast.success("Successfully Logged in, redirecting");
-      router.push('/admin');
       setLoading(false);
     }
   };
