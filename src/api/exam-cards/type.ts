@@ -32,5 +32,6 @@ export interface ExamCardsData{
 export interface ScratchCard{
   pin: string,
   serialNumber: string,
- 
+  reference?: string,
+  
 }

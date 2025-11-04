@@ -1,7 +1,8 @@
+import "@/lib/db";
 import type { Metadata } from "next";
 import { PT_Sans } from "next/font/google";
 import "./globals.css";
-import { ConvexClientProvider } from "./ConvexClientProvider";
+
 
 const inter = PT_Sans({
   weight: ["400" , "700"],
@@ -9,6 +10,7 @@ const inter = PT_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_URL || "https://albarika.vercel.app"),
   title: "Albarika Computer Centre - Your Gateway to Quality Computing Services",
   description: "Comprehensive computing solutions and technology education. From professional training programs to document services, computer maintenance, and exam preparation - your complete computing partner.",
   icons: {
@@ -37,9 +39,9 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} antialiased`}>
-      {/* <ConvexClientProvider> */}
+      
         {children}
-        {/* </ConvexClientProvider> */}
+    
       </body>
     </html>
   );

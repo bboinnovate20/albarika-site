@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
+ 
 
 interface PaymentPopupProps {
   isOpen: boolean;
@@ -24,8 +23,8 @@ export default function PaymentPopup({
   });
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const createReceipt = useMutation(api.receipts.createReceipt);
-  const generateReceiptNumber = useQuery(api.receipts.generateReceiptNumber);
+  // const createReceipt = useMutation(api.receipts.createReceipt);
+  // const generateReceiptNumber = useQuery(api.receipts.generateReceiptNumber);
 
   const paymentMethods = ["Cash", "Bank Transfer", "Card Payment", "Mobile Money"];
   
@@ -46,19 +45,19 @@ export default function PaymentPopup({
     console.log(studentData);
 
     try {
-      await createReceipt({
-        studentID: studentData.studentId,
-        studentName: studentData.name,
-        studentEmail: studentData.email,
-        studentPhone: studentData.phone,
-        receiptNumber: generateReceiptNumber || `ALB-RECEIPT-${Date.now()}`,
-        amount: parseFloat(paymentData.amount),
-        // currency: "NGN",
-        paymentMethod: paymentData.paymentMethod,
-        serviceType: paymentData.serviceType,
-        programName: studentData.program,
-        notes: paymentData.notes
-      });
+      // await createReceipt({
+      //   studentID: studentData.studentId,
+      //   studentName: studentData.name,
+      //   studentEmail: studentData.email,
+      //   studentPhone: studentData.phone,
+      //   receiptNumber: generateReceiptNumber || `ALB-RECEIPT-${Date.now()}`,
+      //   amount: parseFloat(paymentData.amount),
+      //   // currency: "NGN",
+      //   paymentMethod: paymentData.paymentMethod,
+      //   serviceType: paymentData.serviceType,
+      //   programName: studentData.program,
+      //   notes: paymentData.notes
+      // });
       onPaymentComplete();
     } catch (error) {
       console.error("Error creating receipt:", error);
@@ -124,12 +123,7 @@ export default function PaymentPopup({
                 <span className="text-gray-600">Duration:</span>
                 <span className="font-medium">{studentData?.programDuration}</span>
               </div>
-              {generateReceiptNumber && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Receipt No:</span>
-                  <span className="font-medium text-blue-600">{generateReceiptNumber}</span>
-                </div>
-              )}
+ 
             </div>
           </div>
         </div>

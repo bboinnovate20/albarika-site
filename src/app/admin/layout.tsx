@@ -1,16 +1,7 @@
 "use client";
-import Link from "next/link";
 import { useState } from "react";
-import { ConvexAuthProvider } from "@convex-dev/auth/react";
-import { ConvexProvider, ConvexReactClient, useConvexAuth } from "convex/react";
-import { ClerkProvider, SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSideBar } from "@/components/custom-ui/app-sidebar"
 import { ToastContainer, toast } from 'react-toastify';
-
-// const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
-const address = process.env.NEXT_PUBLIC_CONVEX_URL;
-const convex = new ConvexReactClient(address as string);
 
 export default function AdminLayout({
   children
@@ -32,8 +23,6 @@ export default function AdminLayout({
   ];
 
   return (
-
-    <ConvexProvider client={convex}>
       <div>
         <ToastContainer />
         <AppSideBar>
@@ -43,10 +32,5 @@ export default function AdminLayout({
         </AppSideBar>
 
       </div>
-
-    </ConvexProvider> 
-  
-
-    
   );
 } 

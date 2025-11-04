@@ -1,7 +1,5 @@
-"use client";
+'use client';
 import { useState } from "react";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "../../../../../convex/_generated/api";
 import PaymentPopup from "../../../../components/PaymentPopup";
 
 export default function StudentRegistrationPage() {
@@ -42,9 +40,9 @@ export default function StudentRegistrationPage() {
   });
 
   // Convex hooks
-  const createStudent = useMutation(api.student.createStudent);
-  const generateStudentNumber = useQuery(api.student.generateStudentNumber);
-  const generateUploadUrl = useMutation(api.student.generateUploadUrl);
+  // const createStudent = useMutation(api.student.createStudent);
+  // const generateStudentNumber = useQuery(api.student.generateStudentNumber);
+  // const generateUploadUrl = useMutation(api.student.generateUploadUrl);
 
   const programs = [
     { value: "Desktop Publishing (3 months)", label: "Desktop Publishing (3 months)", duration: "3 months", month: 3 },
@@ -247,51 +245,51 @@ export default function StudentRegistrationPage() {
     setIsLoading(true);
     
     try {
-      let imageStorageId = null;
+      // let imageStorageId = null;
       
-      // Upload image if selected
-      if (selectedImage) {
-        const postUrl = await generateUploadUrl();
-        const result = await fetch(postUrl, {
-          method: "POST",
-          headers: { "Content-Type": selectedImage.type },
-          body: selectedImage,
-        });
+      // // Upload image if selected
+      // if (selectedImage) {
+      //   const postUrl = await generateUploadUrl();
+      //   const result = await fetch(postUrl, {
+      //     method: "POST",
+      //     headers: { "Content-Type": selectedImage.type },
+      //     body: selectedImage,
+      //   });
         
-        const { storageId } = await result.json();
-        imageStorageId = storageId;
-      }
+      //   const { storageId } = await result.json();
+      //   imageStorageId = storageId;
+      // }
 
-      const studentData = {
-        name: formData.name,
-        email: formData.email || undefined,
-        phone: formData.phone || undefined,
-        program: formData.program,
-        programDuration: formData.programDuration || undefined,
-        enrollmentDate: formData.enrollmentDate ? new Date(formData.enrollmentDate).getTime() : undefined,
-        endDate: formData.endDate ? new Date(formData.endDate).getTime() : undefined,
-        status: formData.status,
-        guardianName: formData.guardianName || undefined,
-        guardianPhoneNumber: formData.guardianPhoneNumber || undefined,
-        guardianRelationship: formData.guardianRelationship || undefined,
-        dateOfBirth: formData.dateOfBirth ? new Date(formData.dateOfBirth).getTime() : undefined,
-        gender: formData.gender || undefined,
-        address: formData.address || undefined,
-        previousEducation: formData.previousEducation || undefined,
-        notes: formData.notes || undefined,
-        ...(imageStorageId && { imageId: imageStorageId }),
-      };
+      // const studentData = {
+      //   name: formData.name,
+      //   email: formData.email || undefined,
+      //   phone: formData.phone || undefined,
+      //   program: formData.program,
+      //   programDuration: formData.programDuration || undefined,
+      //   enrollmentDate: formData.enrollmentDate ? new Date(formData.enrollmentDate).getTime() : undefined,
+      //   endDate: formData.endDate ? new Date(formData.endDate).getTime() : undefined,
+      //   status: formData.status,
+      //   guardianName: formData.guardianName || undefined,
+      //   guardianPhoneNumber: formData.guardianPhoneNumber || undefined,
+      //   guardianRelationship: formData.guardianRelationship || undefined,
+      //   dateOfBirth: formData.dateOfBirth ? new Date(formData.dateOfBirth).getTime() : undefined,
+      //   gender: formData.gender || undefined,
+      //   address: formData.address || undefined,
+      //   previousEducation: formData.previousEducation || undefined,
+      //   notes: formData.notes || undefined,
+      //   ...(imageStorageId && { imageId: imageStorageId }),
+      // };
 
-      const createdStudent = await createStudent(studentData);
+      // const createdStudent = await createStudent(studentData);
 
-      // Store student data with the generated studentId for payment popup
-      const registeredStudentWithId = {
-        ...formData,
-        studentId: createdStudent.generatedStudentId,
-        _id: createdStudent._id,
-      };
-      console.log(registeredStudentWithId);
-      setRegisteredStudentData(registeredStudentWithId);
+      // // Store student data with the generated studentId for payment popup
+      // const registeredStudentWithId = {
+      //   ...formData,
+      //   studentId: createdStudent.generatedStudentId,
+      //   _id: createdStudent._id,
+      // };
+      // console.log(registeredStudentWithId);
+      // setRegisteredStudentData(registeredStudentWithId);
       setShowPaymentPopup(true);
       
     } catch (error) {
@@ -343,11 +341,11 @@ export default function StudentRegistrationPage() {
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Student Registration</h1>
         <p className="text-gray-600 mt-2">Register new students for training programs</p>
-        {generateStudentNumber && (
+        {/* {generateStudentNumber && (
           <p className="text-sm text-blue-600 mt-2">
             Next Student ID: {generateStudentNumber}
           </p>
-        )}
+        )} */}
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">

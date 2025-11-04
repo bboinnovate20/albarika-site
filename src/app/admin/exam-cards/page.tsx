@@ -26,6 +26,7 @@ export default function WAECVerification() {
    const [loading, setLoading] = useState<boolean>(false);
    const [globalLoading, setGlobalLoading] = useState<boolean>(false);
    const [allCards, setAllCards] = useState<ExamCardsData[]>([]);
+   const [currentPurchasedCard, setCurrentPurchasedCard] = useState<ScratchCard | null>(null);
 
 //    const handleDownload = () => {
 //     setLoading(true);
@@ -56,18 +57,28 @@ export default function WAECVerification() {
 
   const purchaseACard = async () => {
     setLoading(true)
+    setCurrentPurchasedCard(null)
     const info = await examApi.purchasedWAECCard();
+    
     getAllCard();
     toast.success("Successfully purchased WAEC");
 
     const cards = info?.data?.cards[0];
+    const currentCard: ScratchCard = {
+        pin: cards.pin,
+        serialNumber: cards.serial_no
+    };
+
+    setCurrentPurchasedCard(currentCard);
     
-    handleDownloadSingle({
-        serialNumber: cards.serial_no,
-        pin:cards.pin
-    }, info?.data?.reference);
+    // handleDownloadSingle({
+    //     serialNumber: cards.serial_no,
+    //     pin:cards.pin
+    // }, info?.data?.reference);
     setLoading(false)
   }
+
+  
 
   const getAllCard = async () =>{
     const info = await examApi.purchasedWAECExamList();
@@ -87,19 +98,28 @@ export default function WAECVerification() {
        <main className='flex flex-col'>
         <div>
             <HeaderAdmin title='EXAM Cards'/>
-            <WAECCard/>
             
+            <WAECCard wrn={currentPurchasedCard?.serialNumber} pin={currentPurchasedCard?.serialNumber} />
+            {currentPurchasedCard ?
+                <PrimaryBtn 
+                isLoading={loading}
+                onClick={
+                    () => handleDownloadSingle(
+                        {serialNumber: currentPurchasedCard.serialNumber, 
+                        pin: currentPurchasedCard.pin}, currentPurchasedCard.reference ?? "")}
+
+                prefixIcon={<Download/>}>Download Purchase WAEC Card</PrimaryBtn>:
             <CustomDialogueWithChild
             message='Are you sure you want to Purchase WAEC Card?'
             onConfirm={() => {
                 purchaseACard();
             }}
             >
-                <PrimaryBtn 
+            <PrimaryBtn 
                 isLoading={loading}
                 // onClick={handleDownload}
                 prefixIcon={<Send/>}>Purchase WAEC Card</PrimaryBtn>
-            </CustomDialogueWithChild>
+            </CustomDialogueWithChild>}
             
         </div>
         {/* <CustomDialogue message='Are you sure you want to purchase WAEC Card?' /> */}

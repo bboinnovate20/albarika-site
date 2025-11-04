@@ -18,7 +18,7 @@ export function middleware(request: NextRequest) {
   
   // Redirect to login if no token and accessing protected /admin routes
   if (!token && pathname.startsWith('/admin')) {
-    return NextResponse.redirect(new URL('auth/admin/login', request.url));
+    return NextResponse.redirect(new URL('/auth/admin/login', request.url));
   }
   
   return NextResponse.next();

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 // import './Receipt.css'; // move your CSS into this file or use styled-components
-import { Doc } from '@convex-dev/auth/server';
+ 
 import { usePDF } from 'react-to-pdf';
 
 
