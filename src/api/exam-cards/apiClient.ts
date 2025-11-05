@@ -3,7 +3,6 @@ import axios from "axios";
 
 import { toast } from "react-toastify";
 
-
 export const apiClientExam = axios.create({
   baseURL: `${EXAM_CARDS_BASE_URL}/api/exam-cards`,
   headers: {
@@ -11,6 +10,21 @@ export const apiClientExam = axios.create({
   },
   withCredentials: true
 });
+
+apiClientExam.interceptors.request.use(
+  (config) => {
+    if (typeof window !== "undefined") { // Ensure this runs only on the client-side
+      const token = localStorage.getItem("accessToken"); // Assuming token is stored as 'accessToken'
+      if (token) {
+        config.headers["Authorization"] = `Bearer ${token}`;
+      }
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 
 export const apiAdminClient = axios.create({
@@ -31,27 +45,20 @@ export const apiAdminServer = axios.create({
 
 
 
-// apiClientExam.interceptors.request.use(
-//   (config) => {
+apiClientExam.interceptors.request.use(
+  async (config) => {
+    const value = (await window.cookieStore.get("auth_token"))?.value
+    if(value){
+      config.headers["Authorization"] = `Bearer ${value}`;
+    }
 
-//     if (EXAM_CARDS_API_KEY) {
-//       config.headers["Authorization"] = `Bearer ${EXAM_CARDS_API_KEY}`;
-//     }
-
-//     if (config.data && typeof config.data === "object") {
-//       config.data = {
-//         ...config.data,
-//         requestedAt: new Date().toISOString(),
-//       };
-//     }
-
-//     return config;
-//   },
-//   (error) => {
-//     console.error("❌ Request error:", error);
-//     return Promise.reject(error);
-//   }
-// );
+    return config;
+  },
+  (error) => {
+    console.error("❌ Request error:", error);
+    return Promise.reject(error);
+  }
+);
 apiClientExam.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -64,7 +71,7 @@ apiClientExam.interceptors.response.use(
       // Option 1: Redirect to login page (for pages)
        if (typeof window !== "undefined") {
         toast.error("Session expired. Please log in again.");
-        // window.location.href = "/auth/admin/login";
+        window.location.href = "/auth/admin/login";
       }
       // Option 2 (App Router): use redirect('/admin/login') in server components
       // or import { useRouter } from 'next/navigation' for client components
