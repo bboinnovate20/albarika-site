@@ -34,10 +34,11 @@ export default function AdminLogin() {
       });
       
       if (response.redirected) {
+        console.log("redirected");
         window.location.href = response.url;
         return;
       }
-      
+
       if (!response.ok) {
         const data = await response.json();
         console.log(data, 'data');

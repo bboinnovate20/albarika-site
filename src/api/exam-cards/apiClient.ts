@@ -45,20 +45,35 @@ export const apiAdminServer = axios.create({
 
 
 
-apiClientExam.interceptors.request.use(
-  async (config) => {
-    const value = (await window.cookieStore.get("auth_token"))?.value
-    if(value){
-      config.headers["Authorization"] = `Bearer ${value}`;
-    }
+function getCookie(name: string): string | null {
+  if (typeof document === 'undefined') return null;
+  
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) {
+    return parts.pop()?.split(';').shift() || null;
+  }
+  return null;
+}
 
+apiClientExam.interceptors.request.use(
+  (config) => {
+    if (typeof window !== "undefined") {
+      // Try to get token from cookie first
+      const token = getCookie("auth_token");
+      
+      if (token) {
+        config.headers["Authorization"] = `Bearer ${token}`;
+      }
+    }
     return config;
   },
   (error) => {
-    console.error("❌ Request error:", error);
     return Promise.reject(error);
   }
 );
+
+
 apiClientExam.interceptors.response.use(
   (response) => response,
   (error) => {
