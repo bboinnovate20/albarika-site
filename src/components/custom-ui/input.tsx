@@ -4,6 +4,7 @@ interface FormInputProps {
   id: string;
   label: string;
   type?: string;
+  name: string;
   value: string;
   placeholder?: string;
   required?: boolean;
@@ -18,6 +19,7 @@ const FormInput: React.FC<FormInputProps> = ({
   placeholder = '',
   required = false,
   onChange,
+  name,
 }) => {
   return (
     <div className="mb-4">
@@ -32,6 +34,7 @@ const FormInput: React.FC<FormInputProps> = ({
         id={id}
         type={type}
         required={required}
+        name={name}
         value={value}
         onChange={onChange}
         placeholder={placeholder}

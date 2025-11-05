@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
 
     const apiResponse = await apiAdminServer.post('/auth/login', { username, password });
     console.log("apiResponse", apiResponse.data.data.accessToken);
+
     const token = apiResponse.data.data.accessToken;
 
     if (!token) {
@@ -31,11 +32,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create response
-    const response = NextResponse.json({
-      success: true,
-      message: 'Login successful',
-    });
+    // Create a redirect response
+    const redirectUrl = new URL('/admin/home', request.url);
+    const response = NextResponse.redirect(redirectUrl);
 
     // Set HttpOnly cookies
     response.cookies.set('auth_token', token, {

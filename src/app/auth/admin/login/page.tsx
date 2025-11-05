@@ -14,34 +14,43 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
+    const formData = new FormData(e.currentTarget);
+    const username = formData.get('username') as string;
+    const password = formData.get('password') as string;
+
+    console.log(username, 'username');
+
     try {
-    
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
+  
       });
-
-      const data = await response.json();
-      console.log('data success', response.ok, data.success, data)
-      if (response.ok && data.success) {
-        router.push('/admin');
-      } else {
-        setError(data?.details?.errors[0]?.message || 'Invalid credentials');
+      
+      if (response.redirected) {
+        window.location.href = response.url;
+        return;
       }
+      
+      if (!response.ok) {
+        const data = await response.json();
+        console.log(data, 'data');
+        setError(data?.details?.errors[0]?.message || data?.message || 'Invalid credentials');
+        setLoading(false);
+      }
+      // If successful, server redirects and we don't reach here
     } catch (err) {
       console.log("error info", err);
       setError('An error occurred. Please try again.');
-    } finally {
       setLoading(false);
     }
   };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br px-4">
       <div className="max-w-md w-full space-y-8">
@@ -58,6 +67,7 @@ export default function AdminLogin() {
         <div className="bg-white rounded-xl shadow-lg p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
               <FormInput
+              name='username'
                 id="username"
                 label="Username"
                 type="username"
@@ -69,6 +79,7 @@ export default function AdminLogin() {
 
               <FormInput
                 id="password"
+                name='password'
                 label="Password"
                 type="password"
                 value={password}
