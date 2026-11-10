@@ -1,5 +1,4 @@
 import { WhatsAppFloat } from "@/components/landing/WhatsAppFloat";
-import "@/lib/db";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Toaster } from "sonner";
