@@ -1,121 +1,61 @@
-import Link from "next/link";
+"use client";
+
+import { Reveal } from "@/components/landing/Reveal";
+import { services } from "@/lib/landing";
+import type { MessageInput } from "@/lib/message-schema";
+import { ClipboardList, FileText, FolderKanban, MonitorSmartphone, Printer } from "lucide-react";
+
+const icons = [Printer, ClipboardList, MonitorSmartphone, FileText, FolderKanban];
+
+function requestService(topic: MessageInput["topic"]) {
+  window.dispatchEvent(new CustomEvent("albarika-topic", { detail: topic }));
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.getElementById("contact")?.scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
+}
 
 export default function ServicesSection() {
-  const services = [
-    {
-      id: "document-services",
-      title: "Document Services",
-      description: "Professional typing, scanning & printing solutions",
-      icon: "fas fa-file-alt",
-      color: "bg-orange-500",
-      services: ["Document Typing", "Scanning Services", "Photocopying", "Laminating Services", "Professional Typist Services"],
-      duration: "On Demand"
-    },
-    {
-      id: "form-registration",
-      title: "Online Registration",
-      description: "Website form registration and online applications",
-      icon: "fas fa-laptop",
-      color: "bg-green-500",
-      services: ["JAMB Registration", "WAEC Registration", "University Applications", "Job Applications", "Government Forms"],
-      duration: "Instant"
-    },
-    {
-      id: "exam-preparation",
-      title: "Exam Preparation",
-      description: "JAMB & WAEC computer-based test preparation",
-      icon: "fas fa-graduation-cap",
-      color: "bg-red-500",
-      services: ["JAMB CBT Training", "WAEC Preparation", "Practice Tests", "Mock Examinations", "Result Checking"],
-      duration: "Flexible"
-    },
-    {
-      id: "computer-maintenance",
-      title: "Computer Maintenance",
-      description: "Expert computer repair and technical support",
-      icon: "fas fa-tools",
-      color: "bg-indigo-500",
-      services: ["Hardware Repair", "Software Installation", "Virus Removal", "System Optimization", "Network Setup"],
-      duration: "Same Day"
-    },
-    {
-      id: "data-entry",
-      title: "Data Entry Management",
-      description: "Professional data entry and management services",
-      icon: "fas fa-database",
-      color: "bg-purple-500",
-      services: ["Data Entry", "Database Management", "Excel Spreadsheets", "Record Keeping", "Data Analysis"],
-      duration: "24-48 Hours"
-    },
-    {
-      id: "project-creation",
-      title: "Project Creation",
-      description: "Academic and business project development",
-      icon: "fas fa-project-diagram",
-      color: "bg-blue-500",
-      services: ["Student Projects", "Business Proposals", "Research Papers", "Presentations", "Report Writing"],
-      duration: "1-7 Days"
-    }
-  ];
-
   return (
-    <section id="services" className="section-padding bg-gray-50">
+    <section id="services" className="bg-white pb-20 pt-4 sm:pb-24 sm:pt-6">
       <div className="container-custom">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Computing Services</h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Professional computing services designed to meet your daily business and academic needs
+        <Reveal>
+        <div className="max-w-2xl">
+          <h2 className="t-stagger-line t-stagger-line--1 font-display text-[28px] font-extrabold leading-tight text-ink sm:text-[40px]">
+            Our Services
+          </h2>
+          <p className="t-stagger-line t-stagger-line--2 mt-4 text-[17px] font-medium leading-7 text-copy">
+            Training is one part of the institute. The same desk handles documents, exams, repairs and projects.
           </p>
         </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service) => (
-            <Link 
-              key={service.id}
-              href={`#contact`}
-              className="bg-white shadow-lg rounded-2xl p-6 block hover:shadow-xl transition-all duration-300 group border border-gray-100 hover:border-blue-200"
-            >
-              <div className={`w-12 h-12 ${service.color} rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                <i className={`${service.icon} text-white text-xl`}></i>
-              </div>
-              
-              <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                {service.title}
-              </h3>
-              
-              <p className="text-gray-600 mb-4 text-sm">
-                {service.description}
-              </p>
-              
-              <div className="flex items-center justify-end mb-4">
-                <span className="text-sm text-gray-500">({service.duration})</span>
-              </div>
-              
-              <div className="space-y-2 mb-6">
-                {service.services.map((item, index) => (
-                  <div key={index} className="flex items-center space-x-2">
-                    <i className="fas fa-check text-green-600 text-sm"></i>
-                    <span className="text-sm text-gray-700">{item}</span>
-                  </div>
-                ))}
-              </div>
-              
-              <div className="flex items-center text-blue-600 text-sm font-medium group-hover:text-blue-700">
-                Get Service
-                <i className="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
-              </div>
-            </Link>
-          ))}
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {services.map((service, index) => {
+            const Icon = icons[index];
+            return (
+              <article
+                key={service.title}
+                className="t-stagger-line flex flex-col rounded-[28px] border border-line bg-paper p-6"
+                style={{ transitionDelay: `calc(var(--stagger-stagger) * ${index + 2})` }}
+              >
+                <span className="flex size-11 items-center justify-center rounded-2xl bg-white text-ink">
+                  <Icon className="size-5" />
+                </span>
+                <h3 className="mt-5 text-xl font-bold text-ink">{service.title}</h3>
+                <p className="mt-2 flex-1 text-sm font-medium leading-6 text-copy">{service.summary}</p>
+                <div className="mt-auto pt-5">
+                  <span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-ink">{service.timing}</span>
+                  <button
+                    type="button"
+                    onClick={() => requestService(service.topic)}
+                    className="mt-4 w-full rounded-full bg-ink px-4 py-3 text-sm font-semibold text-white transition-[background-color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-[#1e2f7a] active:scale-[0.97]"
+                  >
+                    Request this service
+                  </button>
+                </div>
+              </article>
+            );
+          })}
         </div>
-
-        <div className="text-center mt-12">
-          <p className="text-gray-600 mb-4">Need a custom service not listed above?</p>
-          <Link href="#contact" className="btn-primary">
-            <i className="fas fa-phone mr-2"></i>
-            Contact Us for Custom Solutions
-          </Link>
-        </div>
+        </Reveal>
       </div>
     </section>
   );
-} 
+}

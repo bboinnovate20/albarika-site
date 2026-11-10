@@ -26,8 +26,11 @@ export function AppSideBar({ children }: { children: React.ReactNode }) {
   };
   
   const sideBarList = [
-    { name: "Home", link: "/home" },
-    { name: "WAEC Verification", link: "/exam-cards" },
+    { name: "Dashboard", link: "" },
+    { name: "Students", link: "/students" },
+    { name: "Courses", link: "/courses" },
+    { name: "Internal services", link: "/services" },
+    { name: "Internal", link: "/internal" },
   ]
 
   const closeSidebar = () => {
@@ -68,11 +71,12 @@ export function AppSideBar({ children }: { children: React.ReactNode }) {
           </span>
           <ul className="mt-6">
             {sideBarList.map((item, index) => {
-              const isActive = pathname === `/admin${item.link}`
+              const href = `/admin${item.link}`
+              const isActive = item.link === "" ? pathname === "/admin" : pathname === href || pathname.startsWith(`${href}/`)
               return (
                 <li key={index}>
                   <Link
-                    href={`/admin${item.link}`}
+                    href={href}
                     onClick={closeSidebar}
                     className={`
                       block p-4 font-semibold transition-all tracking-wide 

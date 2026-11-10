@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local contact messages
+/data
+
+# local pnpm store (dependency cache, never commit)
+/.pnpm-store/

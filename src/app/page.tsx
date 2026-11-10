@@ -1,36 +1,29 @@
-"use client";
+import { publicCourses } from "@/lib/repo/courses";
 import AboutSection from "@/components/AboutSection";
 import ContactSection from "@/components/ContactSection";
+import CoursesSection from "@/components/CoursesSection";
 import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
 import Navigation from "@/components/Navigation";
-import ProgramsSection from "@/components/ProgramsSection";
-import SchoolsSection from "@/components/SchoolsSection";
 import ServicesSection from "@/components/ServicesSection";
-import StatsSection from "@/components/StatsSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
-import Image from "next/image";
-import Link from "next/link";
-import { useState } from "react";
 
-export default function Home() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+export const dynamic = "force-dynamic";
 
+export default async function Home() {
+  const courseList = await publicCourses();
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
-      <HeroSection />
-      
+    <div className="min-h-screen bg-white text-ink">
+      <Navigation />
       <main>
+        <HeroSection />
+        <CoursesSection courses={courseList} />
         <ServicesSection />
-        <SchoolsSection />
         <AboutSection />
         <TestimonialsSection />
         <ContactSection />
-        {/* <StatsSection /> */}
       </main>
-
-      <Footer />
+      <Footer courses={courseList} />
     </div>
   );
 }

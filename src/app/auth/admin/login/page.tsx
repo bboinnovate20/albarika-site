@@ -33,9 +33,8 @@ export default function AdminLogin() {
   
       });
       
-      if (response.redirected) {
-        console.log("redirected");
-        window.location.href = response.url;
+      if (response.ok) {
+        window.location.href = "/admin";
         return;
       }
 

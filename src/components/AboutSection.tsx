@@ -1,107 +1,45 @@
-import Link from "next/link";
+import { Reveal } from "@/components/landing/Reveal";
+import { ArrowRight } from "lucide-react";
+import Image from "next/image";
 
 export default function AboutSection() {
-  const features = [
-    {
-      icon: "fas fa-graduation-cap",
-      title: "Expert Training",
-      description: "Learn from industry professionals with real-world experience"
-    },
-    {
-      icon: "fas fa-laptop-code",
-      title: "Professional Services",
-      description: "Complete computing solutions for individuals and businesses"
-    },
-    {
-      icon: "fas fa-tools",
-      title: "Technical Support",
-      description: "Computer maintenance, repair, and data management services"
-    },
-    {
-      icon: "fas fa-users",
-      title: "24/7 Availability",
-      description: "Round-the-clock support for all your computing needs"
-    }
-  ];
-
   return (
-    <section id="about" className="section-padding bg-white">
-      <div className="container-custom">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left Content */}
-          <div className="space-y-8">
-            <div className="space-y-4">
-              
-              
-              <h2 className="text-4xl font-bold text-gray-900 leading-tight">
-                Your Complete 
-                <span className="gradient-text"> Computing Solution Partner</span>
-              </h2>
-              
-              <p className="text-xl text-gray-600 leading-relaxed">
-                For over 8 years, Albarika Computer Centre has been your trusted partner for comprehensive computing solutions. 
-                From professional training programs to essential business services, we provide everything you need under one roof.
-              </p>
-            </div>
-
-            <div className="space-y-6">
-              <div className="flex items-start space-x-4">
-                <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-1">
-                  <i className="fas fa-check text-green-600 text-sm"></i>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">500+ Satisfied Clients</h4>
-                  <p className="text-gray-600">Students, businesses, and individuals trust our quality services</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-4">
-                <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-1">
-                  <i className="fas fa-check text-green-600 text-sm"></i>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Comprehensive Service Range</h4>
-                  <p className="text-gray-600">Training, document services, maintenance, exam prep & more</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-4">
-                <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-1">
-                  <i className="fas fa-check text-green-600 text-sm"></i>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Expert Technical Support</h4>
-                  <p className="text-gray-600">Professional computer maintenance and data management solutions</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Link href="#schools" className="btn-primary text-center">
-                <i className="fas fa-cogs mr-2"></i>
-                View Our Services
-              </Link>
-              <Link href="#contact" className="btn-secondary text-center">
-                <i className="fas fa-phone mr-2"></i>
-                Get in Touch
-              </Link>
-            </div>
+    <section id="about" className="mt-10 bg-gradient-to-r from-hero-deep to-ink text-white">
+      <Reveal className="grid items-stretch lg:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.95fr)] lg:gap-3">
+        <div className="flex flex-col justify-center px-6 py-16 sm:px-10 sm:py-20 lg:py-24 lg:pl-16 lg:pr-2">
+          <div className="t-stagger-line t-stagger-line--1">
+            <h2 className="font-script text-[clamp(3.5rem,6vw,5.25rem)] leading-[1.15] text-sun">Meet the Director</h2>
+            <p className="mt-3 text-sm font-bold uppercase tracking-[0.14em] text-white/80">Mrs. Kareem Khadijat</p>
           </div>
-
-          {/* Right Content - Features Grid */}
-          <div className="grid sm:grid-cols-2 gap-6">
-            {features.map((feature, index) => (
-              <div key={index} className="bg-gray-50 rounded-2xl p-6 hover:bg-white hover:shadow-lg transition-all duration-300">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                  <i className={`${feature.icon} text-blue-600 text-xl`}></i>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{feature.title}</h3>
-                <p className="text-gray-600 text-sm">{feature.description}</p>
-              </div>
-            ))}
+          <p className="t-stagger-line t-stagger-line--2 mt-4 font-display text-[32px] font-extrabold leading-[1.05] tracking-[-0.02em] sm:text-[44px]">
+            One institute for learning and for getting the work done
+          </p>
+          <p className="t-stagger-line t-stagger-line--3 mt-5 text-base font-medium leading-7 text-white/80 sm:text-lg sm:leading-8">
+            Chief Executive Officer. At Albarika Computer Institute, we are your complete computing partner. From professional training to documents, exam preparation and computer maintenance, the work happens under one roof.
+          </p>
+          <a
+            href="#courses"
+            className="t-stagger-line t-stagger-line--4 mt-8 inline-flex w-fit items-center gap-2 rounded-full bg-blurple px-5 py-3 text-sm font-semibold text-white transition-[background-color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-[#4752C4] active:scale-[0.97]"
+          >
+            Enrol in a course
+            <ArrowRight className="size-4" />
+          </a>
+        </div>
+        <div className="t-from-right relative min-h-[460px] sm:min-h-[560px]">
+          <div className="absolute -top-8 right-8 bottom-10 left-8 sm:right-10 lg:-top-10 lg:right-14 lg:bottom-12 lg:left-0">
+            <div aria-hidden className="absolute inset-0 translate-x-2 translate-y-2 rounded-[28px] bg-sun" />
+            <div className="relative h-full overflow-hidden rounded-[28px] border-[3px] border-sun bg-white">
+              <Image
+                src="/image/ceo.jpeg"
+                alt="Mrs. Kareem Khadijat, Chief Executive Officer of Albarika Computer Institute"
+                fill
+                className="object-cover object-[center_18%]"
+                sizes="(min-width: 1024px) 460px, 86vw"
+              />
+            </div>
           </div>
         </div>
-      </div>
+      </Reveal>
     </section>
   );
-} 
+}
