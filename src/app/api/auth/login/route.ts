@@ -23,6 +23,15 @@ export async function POST(request: NextRequest) {
     if (name === "NotAuthorizedException" || name === "UserNotFoundException") {
       return NextResponse.json({ success: false, message: "That email or password is not right." }, { status: 401 });
     }
-    return NextResponse.json({ success: false, message: "Sign-in is unavailable right now." }, { status: 503 });
+    const detail = error instanceof Error ? `${name || "Error"}: ${error.message}` : "Unknown error";
+    console.error("[auth/login]", detail);
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Sign-in is unavailable right now.",
+        ...(process.env.NODE_ENV !== "production" ? { detail } : {}),
+      },
+      { status: 503 },
+    );
   }
 }

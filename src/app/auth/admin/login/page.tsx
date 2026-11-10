@@ -41,7 +41,7 @@ export default function AdminLogin() {
       if (!response.ok) {
         const data = await response.json();
         console.log(data, 'data');
-        setError(data?.details?.errors[0]?.message || data?.message || 'Invalid credentials');
+        setError(data?.detail || data?.details?.errors[0]?.message || data?.message || 'Invalid credentials');
         setLoading(false);
       }
       // If successful, server redirects and we don't reach here

@@ -220,7 +220,7 @@ function SuccessPanel({ reduce, onAgain }: { reduce: boolean | null; onAgain: ()
       transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
     >
       <motion.img
-        src="/icon/success-icon.png"
+        src="/icon/success-icon.webp"
         alt=""
         width={168}
         height={154}
