@@ -36,9 +36,8 @@ export function EnrolForm({
   const [sent, setSent] = useState(false);
   const [shaking, setShaking] = useState<string[]>([]);
   const initialCourse = courses.find((course) => course.slug === courseSlug) ?? courses[0];
-  const initialMonths = initialCourse?.options.some((option) => String(option.months) === months)
-    ? Number(months)
-    : initialCourse?.options[0]?.months;
+  const initialOption =
+    initialCourse?.options.find((option) => String(option.months) === months) ?? initialCourse?.options[0];
 
   const {
     register,
@@ -55,7 +54,8 @@ export function EnrolForm({
       email: "",
       gender: "",
       courseId: initialCourse?.id ?? "",
-      months: initialMonths ?? 0,
+      feeId: initialOption?.id ?? "",
+      months: initialOption?.months ?? 0,
       guardianName: "",
       guardianPhone: "",
       note: "",
@@ -63,16 +63,15 @@ export function EnrolForm({
   });
 
   const courseId = watch("courseId");
+  const feeId = watch("feeId");
   const selected = courses.find((course) => course.id === courseId) ?? courses[0];
-  const chosenMonths = watch("months");
-  const option = selected?.options.find((item) => item.months === Number(chosenMonths)) ?? selected?.options[0];
+  const option = selected?.options.find((item) => item.id === feeId) ?? selected?.options[0];
 
   useEffect(() => {
-    if (!selected) return;
-    if (!selected.options.some((item) => item.months === Number(chosenMonths))) {
-      setValue("months", selected.options[0]?.months ?? 0);
-    }
-  }, [selected, chosenMonths, setValue]);
+    if (!option) return;
+    if (option.id !== feeId) setValue("feeId", option.id);
+    setValue("months", option.months);
+  }, [option, feeId, setValue]);
 
   const price = useMemo(() => (option ? `₦${option.feeNaira.toLocaleString("en-NG")}` : ""), [option]);
 
@@ -148,9 +147,9 @@ export function EnrolForm({
             </Field>
             <Field label="Length" id="months" error={errors.months?.message} shaking={shaking.includes("months")}>
               <SelectWrap invalid={Boolean(errors.months)}>
-                <select id="months" className={selectClass(Boolean(errors.months))} aria-invalid={Boolean(errors.months)} {...register("months")}>
+                <select id="months" className={selectClass(Boolean(errors.months))} aria-invalid={Boolean(errors.months)} {...register("feeId")}>
                   {selected?.options.map((item) => (
-                    <option key={item.months} value={item.months}>
+                    <option key={item.id} value={item.id}>
                       {item.months} months · ₦{item.feeNaira.toLocaleString("en-NG")}
                     </option>
                   ))}

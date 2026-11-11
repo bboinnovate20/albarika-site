@@ -1,6 +1,6 @@
 import { RegistrationForm } from "@/components/admin/RegistrationForm";
 import { PriceText, PriceToggle } from "@/components/admin/PriceVisibility";
-import { registrationStatusLabels } from "@/lib/registration-schema";
+import { paymentStatusLabels, registrationStatusLabels } from "@/lib/registration-schema";
 import { publicCourses } from "@/lib/repo/courses";
 import { getRegistration } from "@/lib/repo/registrations";
 import Link from "next/link";
@@ -42,8 +42,11 @@ export default async function RegistrationPage({ params }: { params: Promise<{ i
       ) : (
         <>
           <p className="mt-2 text-sm font-medium text-copy">
-            {registrationStatusLabels[registration.status]} · sent {new Date(registration.createdAt).toLocaleString("en-NG")} · fee at registration{" "}
+            {registrationStatusLabels[registration.status]} · sent {new Date(registration.createdAt).toLocaleString("en-NG")} · expected amount{" "}
             <PriceText value={`₦${registration.feeNaira.toLocaleString("en-NG")}`} />
+            {" · "}
+            {paymentStatusLabels[registration.payment]}{" "}
+            <PriceText value={`₦${registration.paidNaira.toLocaleString("en-NG")}`} />
           </p>
           {registration.studentCode && <p className="mt-2 font-mono text-sm font-semibold tracking-wide text-ink">{registration.studentCode}</p>}
           <div className="mt-4 flex flex-wrap gap-3 text-sm font-semibold">

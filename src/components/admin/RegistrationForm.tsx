@@ -3,7 +3,7 @@
 import { usePricesVisible } from "@/components/admin/PriceVisibility";
 import { downloadStudentIdCard, StudentIdCardFaces, type StudentIdCardData } from "@/components/admin/StudentIdCard";
 import type { Course } from "@/lib/landing";
-import { registrationStatusLabels, registrationStatuses, type RegistrationStatus } from "@/lib/registration-schema";
+import { paymentStatusLabels, paymentStatuses, registrationStatusLabels, registrationStatuses, type PaymentStatus, type RegistrationStatus } from "@/lib/registration-schema";
 import type { StoredRegistration } from "@/lib/repo/registrations";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
@@ -18,6 +18,7 @@ export function RegistrationForm({ registration, courses }: { registration: Stor
   const frontRef = useRef<HTMLDivElement>(null);
   const backRef = useRef<HTMLDivElement>(null);
   const selected = courses.find((course) => course.id === form.courseId) ?? courses[0];
+  const chosenFee = selected?.options.find((option) => option.id === form.feeId) ?? selected?.options.find((option) => option.months === form.months) ?? selected?.options[0];
   const accepted = form.status === "accepted";
   const card: StudentIdCardData = {
     fullName: form.fullName,
@@ -57,21 +58,29 @@ export function RegistrationForm({ registration, courses }: { registration: Stor
           email: form.email,
           gender: form.gender,
           courseId: form.courseId,
+          feeId: chosenFee?.id ?? "",
           months: Number(form.months),
           guardianName: form.guardianName,
           guardianPhone: form.guardianPhone,
           note: form.note,
           status: form.status,
+          payment: form.payment,
+          paidNaira: form.payment === "paid" ? form.feeNaira : Number(form.paidNaira),
           deskNote: form.deskNote,
           studentCode: form.studentCode,
         }),
       });
-      const data = (await response.json().catch(() => null)) as { error?: string; studentCode?: string } | null;
+      const data = (await response.json().catch(() => null)) as { error?: string; studentCode?: string; paidNaira?: number; payment?: PaymentStatus } | null;
       if (!response.ok) {
         toast.error(data?.error || "The registration could not be saved.");
         return;
       }
-      if (typeof data?.studentCode === "string") setForm((current) => ({ ...current, studentCode: data.studentCode ?? "" }));
+      setForm((current) => ({
+        ...current,
+        studentCode: typeof data?.studentCode === "string" ? data.studentCode : current.studentCode,
+        paidNaira: typeof data?.paidNaira === "number" ? data.paidNaira : current.paidNaira,
+        payment: data?.payment ?? current.payment,
+      }));
       toast.success(data?.studentCode ? `Registration updated. Student ID ${data.studentCode}.` : "Registration updated.");
     } catch {
       toast.error("The registration could not be saved.");
@@ -98,6 +107,50 @@ export function RegistrationForm({ registration, courses }: { registration: Stor
           ))}
         </select>
       </label>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <label className="block">
+          <span className="text-sm font-bold text-ink">Payment</span>
+          <select
+            className={`${fieldClass} mt-2`}
+            value={form.payment}
+            onChange={(event) => {
+              const payment = event.target.value as PaymentStatus;
+              setForm((current) => ({
+                ...current,
+                payment,
+                paidNaira: payment === "paid" ? current.feeNaira : payment === "unpaid" ? 0 : current.paidNaira > 0 && current.paidNaira < current.feeNaira ? current.paidNaira : 0,
+              }));
+            }}
+          >
+            {paymentStatuses.map((payment) => (
+              <option key={payment} value={payment}>
+                {paymentStatusLabels[payment]}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="block">
+          <span className="text-sm font-bold text-ink">Amount paid</span>
+          <input
+            className={`${fieldClass} mt-2`}
+            type="number"
+            min={0}
+            step={1}
+            inputMode="numeric"
+            value={form.payment === "paid" ? form.feeNaira : form.paidNaira}
+            disabled={form.payment !== "partial"}
+            onChange={(event) => setForm((current) => ({ ...current, paidNaira: Number(event.target.value) }))}
+          />
+        </label>
+      </div>
+      <p className="text-sm font-medium text-copy">
+        Expected amount {visible ? `₦${form.feeNaira.toLocaleString("en-NG")}` : "••••"}, kept from the course at registration. A later course change leaves this amount as it is.
+        {form.payment === "paid"
+          ? " Marking this fully paid adds the rest, so the amount paid becomes the expected amount."
+          : form.payment === "partial"
+            ? ` Balance ${visible ? `₦${Math.max(form.feeNaira - Number(form.paidNaira), 0).toLocaleString("en-NG")}` : "••••"}.`
+            : ""}
+      </p>
       <div className="grid gap-5 sm:grid-cols-2">
         <label className="block sm:col-span-2">
           <span className="text-sm font-bold text-ink">Full name</span>
@@ -142,10 +195,12 @@ export function RegistrationForm({ registration, courses }: { registration: Stor
             value={form.courseId}
             onChange={(event) => {
               const course = courses.find((item) => item.id === event.target.value);
+              const keep = course?.options.find((option) => option.months === form.months) ?? course?.options[0];
               setForm((current) => ({
                 ...current,
                 courseId: event.target.value,
-                months: course?.options.some((option) => option.months === current.months) ? current.months : course?.options[0]?.months ?? current.months,
+                months: keep?.months ?? current.months,
+                feeId: keep?.id ?? "",
               }));
             }}
           >
@@ -159,9 +214,20 @@ export function RegistrationForm({ registration, courses }: { registration: Stor
         </label>
         <label className="block">
           <span className="text-sm font-bold text-ink">Length</span>
-          <select className={`${fieldClass} mt-2`} value={form.months} onChange={(event) => setForm((current) => ({ ...current, months: Number(event.target.value) }))}>
-            {(selected?.options ?? [{ months: form.months, feeNaira: form.feeNaira }]).map((option) => (
-              <option key={option.months} value={option.months}>
+          <select
+            className={`${fieldClass} mt-2`}
+            value={chosenFee?.id ?? ""}
+            onChange={(event) => {
+              const option = selected?.options.find((item) => item.id === event.target.value);
+              setForm((current) => ({
+                ...current,
+                feeId: event.target.value,
+                months: option?.months ?? current.months,
+              }));
+            }}
+          >
+            {(selected?.options ?? []).map((option) => (
+              <option key={option.id} value={option.id}>
                 {option.months} months · {visible ? `₦${option.feeNaira.toLocaleString("en-NG")}` : "••••"}
               </option>
             ))}

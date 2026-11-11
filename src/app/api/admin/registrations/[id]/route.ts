@@ -18,20 +18,29 @@ export async function PATCH(request: NextRequest, context: Context) {
     return NextResponse.json({ error: badCode ? "Student IDs look like ALB-0001A26." : "Check the form and try again." }, { status: 400 });
   }
   try {
-    const studentCode = await updateRegistration(id, parsed.data);
-    if (studentCode === null) return NextResponse.json({ error: "That registration was not found." }, { status: 404 });
+    const saved = await updateRegistration(id, parsed.data);
+    if (saved === null) return NextResponse.json({ error: "That registration was not found." }, { status: 404 });
     revalidatePath("/admin");
     revalidatePath("/admin/students");
     revalidatePath(`/admin/students/${id}`);
-    revalidatePath(`/card/${encodeURIComponent(studentCode)}`);
-    return NextResponse.json({ id, studentCode });
+    revalidatePath(`/card/${encodeURIComponent(saved.studentCode)}`);
+    return NextResponse.json({ id, ...saved });
   } catch (error) {
     const unknown = error instanceof Error && error.message === "Unknown course";
     const duplicate = error instanceof Error && error.message === "duplicate";
+    const partial = error instanceof Error && error.message === "partial";
     console.error("registration update failed", error instanceof Error ? error.name : "unknown");
     return NextResponse.json(
-      { error: duplicate ? "That student ID is already in use." : unknown ? "Choose a course we are running." : "The registration could not be saved." },
-      { status: duplicate || unknown ? 400 : 503 },
+      {
+        error: duplicate
+          ? "That student ID is already in use."
+          : unknown
+            ? "Choose a course we are running."
+            : partial
+              ? "Enter an amount paid that is less than the expected amount."
+              : "The registration could not be saved.",
+      },
+      { status: duplicate || unknown || partial ? 400 : 503 },
     );
   }
 }

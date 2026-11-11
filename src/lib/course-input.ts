@@ -19,7 +19,7 @@ export function parseCourseInput(body: unknown): { data: CourseInput } | { error
     const feeNaira = Number(row.feeNaira);
     if (!Number.isInteger(months) || months < 1 || months > 36) return { error: "Each length should be between 1 and 36 months." };
     if (!Number.isInteger(feeNaira) || feeNaira < 0 || feeNaira > 5_000_000) return { error: "Enter a price in naira, with no kobo." };
-    options.push({ months, feeNaira });
+    options.push({ id: typeof row.id === "string" ? row.id : "", months, feeNaira });
   }
   const months = new Set(options.map((option) => option.months));
   if (months.size !== options.length) return { error: "Each length can only have one price." };

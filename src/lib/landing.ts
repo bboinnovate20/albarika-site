@@ -12,7 +12,7 @@ export const institute = {
   maps: "https://www.google.com/maps/search/?api=1&query=56+Freeman+Street+Lagos+Island",
 };
 
-export type CourseOption = { months: number; feeNaira: number };
+export type CourseOption = { id: string; months: number; feeNaira: number };
 
 export type Course = {
   id: string;
@@ -30,8 +30,8 @@ export const courses: Course[] = [
     title: "Desktop Publishing",
     summary: "Design flyers, reports and layouts, then print them cleanly.",
     options: [
-      { months: 3, feeNaira: 25000 },
-      { months: 6, feeNaira: 45000 },
+      { id: "desktop-publishing-3", months: 3, feeNaira: 25000 },
+      { id: "desktop-publishing-6", months: 6, feeNaira: 45000 },
     ],
   },
   {
@@ -39,21 +39,21 @@ export const courses: Course[] = [
     slug: "programming",
     title: "Programming Class",
     summary: "Write real programs, from the first page of code to a finished project.",
-    options: [{ months: 6, feeNaira: 60000 }],
+    options: [{ id: "programming-6", months: 6, feeNaira: 60000 }],
   },
   {
     id: "computer-maintenance",
     slug: "computer-maintenance",
     title: "Computer Maintenance",
     summary: "Diagnose, repair and set up computers and small networks.",
-    options: [{ months: 3, feeNaira: 35000 }],
+    options: [{ id: "computer-maintenance-3", months: 3, feeNaira: 35000 }],
   },
   {
     id: "data-entry",
     slug: "data-entry",
     title: "Data Entry",
     summary: "Build accurate spreadsheets and keep records that stay useful.",
-    options: [{ months: 2, feeNaira: 20000 }],
+    options: [{ id: "data-entry-2", months: 2, feeNaira: 20000 }],
   },
 ];
 

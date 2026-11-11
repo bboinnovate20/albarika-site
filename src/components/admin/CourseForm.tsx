@@ -11,7 +11,7 @@ export function CourseForm({ course, nextPosition }: { course?: Course; nextPosi
   const [title, setTitle] = useState(course?.title ?? "");
   const [summary, setSummary] = useState(course?.summary ?? "");
   const [position, setPosition] = useState(String(course?.position ?? nextPosition));
-  const [options, setOptions] = useState<CourseOption[]>(course?.options.length ? course.options : [{ months: 3, feeNaira: 0 }]);
+  const [options, setOptions] = useState<CourseOption[]>(course?.options.length ? course.options : [{ id: "", months: 3, feeNaira: 0 }]);
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
 
@@ -124,7 +124,7 @@ export function CourseForm({ course, nextPosition }: { course?: Course; nextPosi
         <button
           type="button"
           className="text-sm font-bold text-blurple"
-          onClick={() => setOptions((current) => [...current, { months: 6, feeNaira: 0 }])}
+          onClick={() => setOptions((current) => [...current, { id: "", months: 6, feeNaira: 0 }])}
         >
           Add another length
         </button>

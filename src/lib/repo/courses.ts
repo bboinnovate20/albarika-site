@@ -67,7 +67,7 @@ async function withCourses<T>(run: (client: Client) => Promise<T>) {
   }
 }
 
-type FeeRow = { course_id: string; months: number; fee_naira: number };
+type FeeRow = { id: string; course_id: string; months: number; fee_naira: number };
 type CourseRow = { id: string; slug: string; title: string; summary: string; sort_order: number };
 
 function group(rows: CourseRow[], fees: FeeRow[]): Course[] {
@@ -79,7 +79,7 @@ function group(rows: CourseRow[], fees: FeeRow[]): Course[] {
     position: course.sort_order,
     options: fees
       .filter((fee) => fee.course_id === course.id)
-      .map((fee) => ({ months: fee.months, feeNaira: fee.fee_naira })),
+      .map((fee) => ({ id: fee.id, months: fee.months, feeNaira: fee.fee_naira })),
   }));
 }
 
@@ -96,7 +96,7 @@ export async function listCourses() {
       `SELECT id, slug, title, summary, sort_order FROM courses ORDER BY sort_order ASC, title ASC`,
     );
     const fees = await client.query<FeeRow>(
-      `SELECT course_id, months, fee_naira FROM course_fees ORDER BY sort_order ASC, months ASC`,
+      `SELECT id, course_id, months, fee_naira FROM course_fees ORDER BY sort_order ASC, months ASC`,
     );
     return group(coursesResult.rows, fees.rows);
   });

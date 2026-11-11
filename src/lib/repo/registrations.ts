@@ -3,7 +3,7 @@ import { Client } from "pg";
 import { connectDsql } from "@/lib/dsql";
 import { storeStudentPhoto } from "@/lib/slip-store";
 import { publicCourses } from "@/lib/repo/courses";
-import type { RegistrationInput, RegistrationStatus, RegistrationUpdate } from "@/lib/registration-schema";
+import { settledPayment, type PaymentStatus, type RegistrationInput, type RegistrationStatus, type RegistrationUpdate } from "@/lib/registration-schema";
 import { formatStudentId, studentInitial } from "@/lib/student-id";
 
 async function connect() {
@@ -32,10 +32,25 @@ async function ensureRegistrations(client: Client) {
       note TEXT,
       desk_note TEXT,
       student_code TEXT,
-      photo_key TEXT
+      photo_key TEXT,
+      payment TEXT,
+      paid_naira INTEGER
     )
   `);
   await client.query(`ALTER TABLE registrations ADD COLUMN IF NOT EXISTS photo_key TEXT`);
+  await client.query(`ALTER TABLE registrations ADD COLUMN IF NOT EXISTS fee_id TEXT`);
+  await client.query(`ALTER TABLE registrations ADD COLUMN IF NOT EXISTS payment TEXT`);
+  await client.query(`ALTER TABLE registrations ADD COLUMN IF NOT EXISTS paid_naira INTEGER`);
+  await client.query(`
+    UPDATE registrations AS registration
+    SET fee_id = fee.id
+    FROM course_fees AS fee
+    WHERE registration.fee_id IS NULL
+      AND fee.course_id = registration.course_id
+      AND fee.months = registration.months
+  `).catch((error: unknown) => {
+    console.error("registration fee link skipped", error instanceof Error ? error.name : "unknown");
+  });
   await client
     .query(`CREATE UNIQUE INDEX ASYNC IF NOT EXISTS registrations_student_code_key ON registrations (student_code)`)
     .catch((error: unknown) => {
@@ -85,6 +100,9 @@ type RegistrationRow = {
   desk_note: string | null;
   student_code: string | null;
   photo_key: string | null;
+  fee_id: string | null;
+  payment: string | null;
+  paid_naira: number | null;
 };
 
 export type StoredRegistration = {
@@ -106,6 +124,9 @@ export type StoredRegistration = {
   deskNote: string;
   studentCode: string;
   photoKey: string;
+  feeId: string;
+  payment: PaymentStatus;
+  paidNaira: number;
 };
 
 function mapRow(row: RegistrationRow): StoredRegistration {
@@ -128,16 +149,22 @@ function mapRow(row: RegistrationRow): StoredRegistration {
     deskNote: row.desk_note ?? "",
     studentCode: row.student_code ?? "",
     photoKey: row.photo_key ?? "",
+    feeId: row.fee_id ?? "",
+    payment: row.payment === "partial" || row.payment === "paid" ? row.payment : "unpaid",
+    paidNaira: row.paid_naira ?? 0,
   };
 }
 
-const columns = `id, created_at, updated_at, status, full_name, phone, email, gender, course_id, course_title, months, fee_naira, guardian_name, guardian_phone, note, desk_note, student_code, photo_key`;
+const columns = `id, created_at, updated_at, status, full_name, phone, email, gender, course_id, course_title, months, fee_naira, guardian_name, guardian_phone, note, desk_note, student_code, photo_key, fee_id, payment, paid_naira`;
 
-async function courseChoice(courseId: string, months: number) {
+async function courseChoice(courseId: string, months: number, feeId = "") {
   const courses = await publicCourses();
   const course = courses.find((item) => item.id === courseId);
-  const option = course?.options.find((item) => item.months === months);
-  if (!course || !option) return null;
+  if (!course) return null;
+  const option = feeId
+    ? course.options.find((item) => item.id === feeId)
+    : course.options.find((item) => item.months === months);
+  if (!option) return null;
   return { course, option };
 }
 
@@ -147,7 +174,7 @@ function blank(value: string | undefined) {
 }
 
 export async function createRegistration(input: RegistrationInput, photoBase64 = "") {
-  const choice = await courseChoice(input.courseId, input.months);
+  const choice = await courseChoice(input.courseId, input.months, input.feeId);
   if (!choice) throw new Error("Unknown course");
   const id = randomUUID();
   let photoKey = "";
@@ -163,7 +190,7 @@ export async function createRegistration(input: RegistrationInput, photoBase64 =
   await withRegistrations((client) =>
     client.query(
       `INSERT INTO registrations (${columns})
-       VALUES ($1, $2, $2, 'pending', $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, '', NULL, $14)`,
+       VALUES ($1, $2, $2, 'pending', $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, '', NULL, $14, $15, 'unpaid', 0)`,
       [
         id,
         now,
@@ -179,6 +206,7 @@ export async function createRegistration(input: RegistrationInput, photoBase64 =
         blank(input.guardianPhone),
         blank(input.note),
         photoKey,
+        choice.option.id,
       ],
     ),
   );
@@ -243,11 +271,17 @@ async function allocateStudentCode(client: Client, fullName: string, year = new 
 }
 
 export async function updateRegistration(id: string, input: RegistrationUpdate) {
-  const choice = await courseChoice(input.courseId, input.months);
+  const choice = await courseChoice(input.courseId, input.months, input.feeId);
   if (!choice) throw new Error("Unknown course");
   return withRegistrations(async (client) => {
-    const current = await client.query<{ student_code: string | null }>(`SELECT student_code FROM registrations WHERE id = $1`, [id]);
+    const current = await client.query<{ student_code: string | null; fee_naira: number }>(
+      `SELECT student_code, fee_naira FROM registrations WHERE id = $1`,
+      [id],
+    );
     if (!current.rowCount) return null;
+    const expected = current.rows[0]?.fee_naira ?? 0;
+    const settled = settledPayment(input.payment ?? "unpaid", input.paidNaira ?? 0, expected);
+    if (!settled) throw new Error("partial");
     let studentCode = (input.studentCode ?? "").trim().toUpperCase();
     const existing = (current.rows[0]?.student_code ?? "").trim().toUpperCase();
     let allocated = false;
@@ -261,8 +295,9 @@ export async function updateRegistration(id: string, input: RegistrationUpdate) 
       client.query(
         `UPDATE registrations
          SET updated_at = $2, status = $3, full_name = $4, phone = $5, email = $6, gender = $7,
-             course_id = $8, course_title = $9, months = $10, fee_naira = $11,
-             guardian_name = $12, guardian_phone = $13, note = $14, desk_note = $15, student_code = $16
+             course_id = $8, course_title = $9, months = $10,
+             guardian_name = $11, guardian_phone = $12, note = $13, desk_note = $14, student_code = $15, fee_id = $16,
+             payment = $17, paid_naira = $18
          WHERE id = $1`,
         [
           id,
@@ -275,19 +310,21 @@ export async function updateRegistration(id: string, input: RegistrationUpdate) 
           choice.course.id,
           choice.course.title,
           choice.option.months,
-          choice.option.feeNaira,
           blank(input.guardianName),
           blank(input.guardianPhone),
           blank(input.note),
           blank(input.deskNote),
           code || null,
+          choice.option.id,
+          settled.payment,
+          settled.paidNaira,
         ],
       );
 
     for (let attempt = 0; attempt < 3; attempt += 1) {
       try {
         const result = await save(studentCode);
-        return result.rowCount ? studentCode : null;
+        return result.rowCount ? { studentCode, paidNaira: settled.paidNaira, payment: settled.payment } : null;
       } catch (error) {
         if (!isUniqueViolation(error) || !allocated || attempt === 2) {
           if (isUniqueViolation(error)) throw new Error("duplicate");

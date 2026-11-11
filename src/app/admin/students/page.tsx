@@ -1,4 +1,5 @@
-import { registrationStatusLabels, type RegistrationStatus } from "@/lib/registration-schema";
+import { PriceText } from "@/components/admin/PriceVisibility";
+import { paymentStatusLabels, registrationStatusLabels, type RegistrationStatus } from "@/lib/registration-schema";
 import { listRegistrations } from "@/lib/repo/registrations";
 import Link from "next/link";
 
@@ -48,6 +49,9 @@ export default async function StudentPage() {
                 {item.courseTitle} · {item.months} months · {item.phone}
               </span>
               {item.studentCode && <span className="mt-1 block font-mono text-sm font-semibold tracking-wide text-ink">{item.studentCode}</span>}
+              <span className="mt-1 block text-sm font-medium text-copy">
+                {paymentStatusLabels[item.payment]} · <PriceText value={`₦${item.paidNaira.toLocaleString("en-NG")}`} /> paid of <PriceText value={`₦${item.feeNaira.toLocaleString("en-NG")}`} />
+              </span>
               <span className="mt-1 block text-xs font-medium text-copy">{new Date(item.createdAt).toLocaleString("en-NG")}</span>
             </Link>
           </li>
