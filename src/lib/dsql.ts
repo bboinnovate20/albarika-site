@@ -48,7 +48,7 @@ async function password(host: string) {
     return await new DsqlSigner({ hostname: host, region }).getDbConnectAdminAuthToken();
   } catch (error) {
     try {
-      return await new DsqlSigner({ hostname: host, region, credentials: cliLoginCredentials }).getDbConnectAdminAuthToken();
+      return await new DsqlSigner({ hostname: host, region, credentials: loginCredentials }).getDbConnectAdminAuthToken();
     } catch (cliError) {
       console.error("desk database login failed", cliError instanceof Error ? cliError.message.slice(0, 160) : "unknown");
       throw error;

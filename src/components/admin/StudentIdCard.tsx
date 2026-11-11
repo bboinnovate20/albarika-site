@@ -1,14 +1,15 @@
 "use client";
 
-import { Plus_Jakarta_Sans } from "next/font/google";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
+import localFont from "next/font/local";
 import QRCode from "qrcode";
 import { useEffect, useState, type ReactNode, type Ref } from "react";
 
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+const jakarta = localFont({
+  src: "../../fonts/plus-jakarta-sans.ttf",
+  weight: "400 800",
+  display: "swap",
 });
 
 export type StudentIdCardData = {

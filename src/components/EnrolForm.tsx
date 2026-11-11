@@ -1,7 +1,7 @@
 "use client";
 
 import { institute, type Course } from "@/lib/landing";
-import { registrationSchema, type RegistrationInput } from "@/lib/registration-schema";
+import { registrationSchema } from "@/lib/registration-schema";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronDown } from "lucide-react";
@@ -47,7 +47,7 @@ export function EnrolForm({
     setValue,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<RegistrationInput>({
+  } = useForm({
     resolver: zodResolver(registrationSchema),
     defaultValues: {
       fullName: "",
