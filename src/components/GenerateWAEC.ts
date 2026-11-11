@@ -75,7 +75,7 @@ async function drawCard(pdf: jsPDF, card: WAECCard, transactionId: string, x: nu
   pdf.text("WAEC Card Checker", x + 5, y + 10);
 
   pdf.setFontSize(10);
-  pdf.text("AL-BARIKA COMPUTER SCIENCE", x + cardWidth - 5, y + 10, { align: "right" });
+  pdf.text("ALBARIKA COMPUTER", x + cardWidth - 5, y + 10, { align: "right" });
 
   // Content
   pdf.setTextColor(0, 0, 0);

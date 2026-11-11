@@ -6,7 +6,7 @@ export default function WAECCard({wrn, pin}: {wrn?: string, pin?: string}) {
     <div className='bg-gray-50 shadow-2xl ring-1 rounded-lg w-[400px] h-[210px] overflow-hidden'>
         <div className='bg-gray-700 p-2 text-white flex justify-between'>
             <h1 className='font-bold text-lg'>WAEC Card Checker</h1>
-            <h1 className='font-bold '>AL-BARIKA COMPUTER SCIENCE</h1>
+            <h1 className='font-bold '>ALBARIKA COMPUTER</h1>
         </div>
         <div className='p-2 leading-4 text-[12px]'>
             <ul>

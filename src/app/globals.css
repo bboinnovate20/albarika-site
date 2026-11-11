@@ -222,6 +222,7 @@ body {
   --color-sidebar-ring: var(--sidebar-ring);
   --font-sans: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-unbounded), ui-sans-serif, sans-serif;
+  --font-admin: var(--font-newsreader), "Iowan Old Style", Palatino, serif;
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
   --font-script: var(--font-great-vibes), "Segoe Script", cursive;
   --color-ink: #14215b;

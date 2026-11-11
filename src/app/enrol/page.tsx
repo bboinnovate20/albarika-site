@@ -1,6 +1,7 @@
-import { institute } from "@/lib/landing";
-import { getCourseBySlug } from "@/lib/repo/courses";
-import Link from "next/link";
+import { EnrolForm } from "@/components/EnrolForm";
+import Footer from "@/components/Footer";
+import Navigation from "@/components/Navigation";
+import { publicCourses } from "@/lib/repo/courses";
 
 export const dynamic = "force-dynamic";
 
@@ -10,34 +11,24 @@ export default async function EnrolPage({
   searchParams: Promise<{ course?: string; months?: string }>;
 }) {
   const params = await searchParams;
-  const course = params.course ? await getCourseBySlug(params.course) : undefined;
-  const months = Number(params.months);
-  const option = course?.options.find((item) => item.months === months) ?? course?.options[0];
+  const courses = await publicCourses();
 
   return (
-    <main className="min-h-screen bg-canvas px-4 py-16 text-ink">
-      <div className="mx-auto max-w-xl rounded-[28px] bg-white p-8">
-        <p className="text-sm font-bold uppercase tracking-[0.14em] text-blurple">Enrolment</p>
-        <h1 className="mt-3 font-display text-3xl font-extrabold">
-          {course ? course.title : "Choose a course, then visit us"}
-        </h1>
-        {option && (
-          <p className="mt-3 text-lg font-medium text-copy">
-            {option.months} months · ₦{option.feeNaira.toLocaleString("en-NG")}
+    <div className="min-h-screen bg-canvas text-ink">
+      <Navigation />
+      <main className="px-4 py-12 sm:py-16">
+        <div className="mx-auto max-w-xl">
+          <p className="text-sm font-bold uppercase tracking-[0.14em] text-blurple">Enrolment</p>
+          <h1 className="mt-3 font-display text-[32px] font-extrabold leading-tight sm:text-4xl">Register for a course</h1>
+          <p className="mt-3 font-medium leading-7 text-copy">
+            Send the student’s details. The desk reviews every registration before a place is confirmed.
           </p>
-        )}
-        <p className="mt-4 font-medium leading-7 text-copy">
-          The full registration form, with your photo and guardian details, is the next piece of this site. For now, call or visit {institute.address.join(", ")} and tell the desk the course you want. A part payment starts your enrolment.
-        </p>
-        <div className="mt-6 flex flex-wrap gap-3">
-          <a href={`tel:${institute.phones[0]}`} className="rounded-full bg-ink px-5 py-3 text-sm font-semibold text-white">
-            Call {institute.phones[0]}
-          </a>
-          <Link href="/#contact" className="rounded-full border border-line px-5 py-3 text-sm font-semibold">
-            Contact us
-          </Link>
+          <div className="mt-8 rounded-[28px] bg-white p-6 sm:p-8">
+            <EnrolForm courses={courses} courseSlug={params.course} months={params.months} />
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+      <Footer courses={courses} />
+    </div>
   );
 }

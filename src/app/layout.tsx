@@ -32,6 +32,13 @@ const greatVibes = localFont({
   display: "swap",
 });
 
+const newsreader = localFont({
+  src: "../fonts/newsreader.ttf",
+  variable: "--font-newsreader",
+  display: "swap",
+  weight: "400 800",
+});
+
 const jetbrains = localFont({
   src: [
     { path: "../fonts/jetbrains-500.ttf", weight: "500", style: "normal" },
@@ -60,7 +67,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${figtree.variable} ${unbounded.variable} ${jetbrains.variable} ${greatVibes.variable}`}>
+    <html lang="en" className={`${figtree.variable} ${unbounded.variable} ${jetbrains.variable} ${greatVibes.variable} ${newsreader.variable}`}>
       <head>
         <link
           rel="stylesheet"

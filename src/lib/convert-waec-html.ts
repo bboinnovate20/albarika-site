@@ -4,7 +4,7 @@ export function generateWAECCardHTML(serialNumber: string, pin: string) {
 <div class="card">
   <div class="header">
     <h1>WAEC Card Checker</h1>
-    <h1>AL-BARIKA COMPUTER SCIENCE</h1>
+    <h1>ALBARIKA COMPUTER</h1>
   </div>
   <div class="content">
     <p><strong>Instructions:</strong></p>

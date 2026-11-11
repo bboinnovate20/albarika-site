@@ -52,11 +52,11 @@ export const examApi = {
             throw error;
         }
     },
-     purchasedWAECCard: async () : Promise<ResponseApi> => {
+     purchasedWAECCard: async (quantity = 1) : Promise<ResponseApi> => {
         try {
             const response = await apiClientExam.post("/purchase",{
                card_type_id: 1,
-               quantity: 1
+               quantity
             });
 
             return { status: response.data?.status, message: response.data?.message, 

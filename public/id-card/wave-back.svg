@@ -1,0 +1,18 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="612" height="972" viewBox="0 0 612 972" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Background art" clip-path="url(#clip0_0_125)">
+<path id="Vector" d="M612 0H0V972H612V0Z" fill="white"/>
+<path id="Vector_2" d="M618 704C653.346 704 682 675.346 682 640C682 604.654 653.346 576 618 576C582.654 576 554 604.654 554 640C554 675.346 582.654 704 618 704Z" fill="#E8F1FF"/>
+<path id="Vector_3" d="M552 296C577.405 296 598 275.405 598 250C598 224.595 577.405 204 552 204C526.595 204 506 224.595 506 250C506 275.405 526.595 296 552 296Z" fill="#8EC5FF"/>
+<path id="Vector_4" d="M612 0H0V190C112 260 232 150 362 200C462 240 552 210 612 250V0Z" fill="#0E2A5C"/>
+<path id="Vector_5" d="M-40 0V230C32 250 102 190 142 120C172 60 122 20 102 0H-40Z" fill="#2563EB"/>
+<path id="Vector_6" d="M343 22H269C264.582 22 261 25.5817 261 30C261 34.4183 264.582 38 269 38H343C347.418 38 351 34.4183 351 30C351 25.5817 347.418 22 343 22Z" fill="#EEF0F2"/>
+<path id="Vector_7" d="M612 780C540 790 500 850 450 890C400 925 340 920 300 972H612V780Z" fill="#8EC5FF"/>
+<path id="Vector_8" d="M612 850C565 860 530 905 490 930C455 950 430 955 415 972H612V850Z" fill="#0E2A5C"/>
+<path id="Vector_9" d="M452 838C460.837 838 468 830.837 468 822C468 813.163 460.837 806 452 806C443.163 806 436 813.163 436 822C436 830.837 443.163 838 452 838Z" fill="#F9B233"/>
+</g>
+<defs>
+<clipPath id="clip0_0_125">
+<rect width="612" height="972" fill="white"/>
+</clipPath>
+</defs>
+</svg>

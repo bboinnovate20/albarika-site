@@ -20,7 +20,7 @@ export default async function EditCoursePage({ params }: { params: Promise<{ id:
       <Link href="/admin/courses" className="text-sm font-bold text-blurple">
         Back to courses
       </Link>
-      <h1 className="mt-3 font-display text-3xl font-extrabold text-ink">Edit course</h1>
+      <h1 className="mt-3 font-admin text-4xl font-medium tracking-tight text-ink">Edit course</h1>
       {problem || !course ? (
         <p className="mt-6 text-sm font-semibold text-[#E5231B]">{problem}</p>
       ) : (

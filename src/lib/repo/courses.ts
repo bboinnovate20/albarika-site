@@ -1,42 +1,10 @@
 import { randomUUID } from "crypto";
-import { lookup } from "dns/promises";
 import { Client } from "pg";
-import { checkServerIdentity } from "tls";
 import { courses as fallbackCourses, type Course, type CourseOption } from "@/lib/landing";
-import { DsqlSigner } from "@aws-sdk/dsql-signer";
-
-const region = process.env.AWS_REGION ?? "us-east-1";
+import { connectDsql } from "@/lib/dsql";
 
 async function connect() {
-  const host = process.env.DSQL_ENDPOINT;
-  if (!host) throw new Error("Missing DSQL_ENDPOINT");
-  const { address } = await lookup(host, { family: 4 });
-  let last: unknown;
-  for (let attempt = 0; attempt < 3; attempt += 1) {
-    const signer = new DsqlSigner({ hostname: host, region });
-    const token = await signer.getDbConnectAdminAuthToken();
-    const client = new Client({
-      host: address,
-      port: 5432,
-      user: "admin",
-      password: token,
-      database: "postgres",
-      connectionTimeoutMillis: 12000,
-      ssl: {
-        rejectUnauthorized: true,
-        servername: host,
-        checkServerIdentity: (_hostname, cert) => checkServerIdentity(host, cert),
-      },
-    });
-    try {
-      await client.connect();
-      return client;
-    } catch (error) {
-      last = error;
-      await client.end().catch(() => undefined);
-    }
-  }
-  throw last;
+  return connectDsql();
 }
 
 let ready: Promise<void> | null = null;
@@ -85,7 +53,12 @@ async function withCourses<T>(run: (client: Client) => Promise<T>) {
       await client.end();
     }
   })();
-  await ready;
+  try {
+    await ready;
+  } catch (error) {
+    ready = null;
+    throw error;
+  }
   const client = await connect();
   try {
     return await run(client);

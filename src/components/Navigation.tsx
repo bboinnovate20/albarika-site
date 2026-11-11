@@ -6,6 +6,7 @@ import { Menu, X } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const links = [
@@ -38,9 +39,11 @@ const item = {
 };
 
 export default function Navigation() {
+  const pathname = usePathname();
   const reduce = useReducedMotion();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const sectionHref = (href: string) => (href.startsWith("#") && pathname !== "/" ? `/${href}` : href);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -89,7 +92,7 @@ export default function Navigation() {
 
         <nav className="hidden items-center gap-6 whitespace-nowrap lg:flex" aria-label="Page">
           {links.map((link) => (
-            <a key={link.href} href={link.href} className="text-sm font-semibold text-ink">
+            <a key={link.href} href={sectionHref(link.href)} className="text-sm font-semibold text-ink">
               {link.label}
             </a>
           ))}
@@ -140,19 +143,22 @@ export default function Navigation() {
             variants={reduce ? undefined : panel}
           >
             <motion.ul className="flex flex-1 flex-col justify-center" variants={reduce ? undefined : list}>
-              {menuItems.map((link) => (
+              {menuItems.map((link) => {
+                const href = sectionHref(link.href);
+                return (
                 <motion.li key={link.href} variants={reduce ? undefined : item}>
-                  {link.href.startsWith("/") ? (
-                    <Link href={link.href} className="block py-3 text-lg font-medium text-ink" onClick={close}>
+                  {href.startsWith("/") ? (
+                    <Link href={href} className="block py-3 text-lg font-medium text-ink" onClick={close}>
                       {link.label}
                     </Link>
                   ) : (
-                    <a href={link.href} className="block py-3 text-lg font-medium text-ink" onClick={close}>
+                    <a href={href} className="block py-3 text-lg font-medium text-ink" onClick={close}>
                       {link.label}
                     </a>
                   )}
                 </motion.li>
-              ))}
+                );
+              })}
               <motion.li variants={reduce ? undefined : item} className="mt-6">
                 <Link
                   href="/enrol"

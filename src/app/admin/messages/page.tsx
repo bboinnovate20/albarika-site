@@ -14,7 +14,7 @@ export default async function MessagesPage() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <h1 className="font-display text-3xl font-extrabold text-ink">Website messages</h1>
+      <h1 className="font-admin text-4xl font-medium tracking-tight text-ink">Website messages</h1>
       <p className="mt-2 text-copy">These are the messages people send from the contact form.</p>
       {problem && <p className="mt-6 text-sm font-semibold text-[#E5231B]">{problem}</p>}
       {!problem && messages.length === 0 && <p className="mt-6 text-sm font-medium text-copy">No messages yet.</p>}

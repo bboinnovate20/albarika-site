@@ -39,7 +39,7 @@ export default function StudentLoginPage() {
           id="student-code"
           value={code}
           onChange={(event) => setCode(event.target.value.toUpperCase())}
-          placeholder="ALB-2026-0042"
+          placeholder="ALB-0001A26"
           autoCapitalize="characters"
           className="mt-2 w-full rounded-[14px] border border-line px-4 py-3 font-mono uppercase outline-none focus:border-blurple"
         />

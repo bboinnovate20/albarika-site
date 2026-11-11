@@ -5,3 +5,8 @@ export const BASE_URL: string = process.env.NEXT_PUBLIC_BASE_URL as string;
 export const WAEC_EXAM_ACCOUNT_NO = "9859059372"
 export const WAEC_EXAM_ACCOUNT_NAME = "AMPLESUCCESSL/MUSA IBRAHIM"
 export const WAEC_EXAM_BANK_NAME = "Paystack-Titan"
+
+export const VERIFY_PLATFORM_ACCOUNTS = [
+  { bank: "Palmpay", number: "6654890534", name: "IBRAHIM VERIFYPLATFORM(ZenithPay)" },
+  { bank: "Wema Bank", number: "9819184857", name: "KATPAY/VERIFYPLATFORM IBRAHIM" },
+]

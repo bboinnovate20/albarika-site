@@ -12,7 +12,7 @@ export default async function NewCoursePage() {
       <Link href="/admin/courses" className="text-sm font-bold text-blurple">
         Back to courses
       </Link>
-      <h1 className="mt-3 font-display text-3xl font-extrabold text-ink">Add a course</h1>
+      <h1 className="mt-3 font-admin text-4xl font-medium tracking-tight text-ink">Add a course</h1>
       <CourseForm nextPosition={nextPosition} />
     </div>
   );

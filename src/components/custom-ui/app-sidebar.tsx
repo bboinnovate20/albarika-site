@@ -1,120 +1,90 @@
-import { Plus, Menu, X, LogOut } from 'lucide-react'
-import React, { useState } from 'react'
-import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { BookOpen, Home, Inbox, LogOut, Menu, Settings2, Users, X } from "lucide-react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
+
+const sideBarList = [
+  { name: "Home", link: "", icon: Home },
+  { name: "Students", link: "/students", icon: Users },
+  { name: "Courses", link: "/courses", icon: BookOpen },
+  { name: "Messages", link: "/messages", icon: Inbox },
+  { name: "Internal services", link: "/services", icon: Settings2 },
+];
 
 export function AppSideBar({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname()
-  const router = useRouter()
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  
-  const handleLogout = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const pathname = usePathname();
+  const router = useRouter();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const handleLogout = async (event: React.FormEvent) => {
+    event.preventDefault();
     try {
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
-      });
-      
+      const response = await fetch("/api/auth/logout", { method: "POST" });
       if (response.ok) {
-        router.push('/auth/admin/login');
-        router.refresh(); // Refresh to clear any cached data
+        router.push("/auth/admin/login");
+        router.refresh();
       }
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error("Logout failed:", error);
     }
   };
-  
-  const sideBarList = [
-    { name: "Dashboard", link: "" },
-    { name: "Students", link: "/students" },
-    { name: "Courses", link: "/courses" },
-    { name: "Internal services", link: "/services" },
-    { name: "Internal", link: "/internal" },
-  ]
 
-  const closeSidebar = () => {
-    setIsSidebarOpen(false)
-  }
+  const closeSidebar = () => setIsSidebarOpen(false);
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      {/* Mobile menu button */}
+    <div className="flex h-screen overflow-hidden bg-[#F7F6F3] text-ink">
       <button
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-blue-900 text-white rounded-md"
+        className="fixed left-4 top-4 z-50 grid size-10 place-items-center rounded-full bg-white text-ink shadow-sm lg:hidden"
+        aria-label={isSidebarOpen ? "Close menu" : "Open menu"}
       >
-        {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+        {isSidebarOpen ? <X size={18} /> : <Menu size={18} />}
       </button>
 
-      {/* Overlay for mobile */}
-      {isSidebarOpen && (
-        <div
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
-          onClick={closeSidebar}
-        />
-      )}
+      {isSidebarOpen && <div className="fixed inset-0 z-30 bg-ink/30 lg:hidden" onClick={closeSidebar} />}
 
-      {/* Sidebar */}
       <nav
-        className={`
-          fixed lg:static inset-y-0 left-0 z-40
-          w-64 lg:w-64 bg-blue-900 text-white
-          transform transition-transform duration-300 ease-in-out
-          flex flex-col
-          ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        `}
+        className={`fixed inset-y-0 left-0 z-40 flex w-60 flex-col border-r border-black/5 bg-[#F3F1EC] transition-transform duration-300 ease-out lg:static ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        }`}
       >
-        <div className="flex-1 overflow-y-auto">
-          <span className="bg-blue-900 w-full p-4 lg:p-3 block font-bold text-lg pt-16 lg:pt-3">
-            Dashboard
-          </span>
-          <ul className="mt-6">
-            {sideBarList.map((item, index) => {
-              const href = `/admin${item.link}`
-              const isActive = item.link === "" ? pathname === "/admin" : pathname === href || pathname.startsWith(`${href}/`)
-              return (
-                <li key={index}>
-                  <Link
-                    href={href}
-                    onClick={closeSidebar}
-                    className={`
-                      block p-4 font-semibold transition-all tracking-wide 
-                      hover:bg-blue-950 text-white
-                      ${isActive ? "bg-blue-950 border-l-4 border-white" : ""}
-                    `}
-                  >
-                    {item.name}
-                  </Link>
-                </li>
-              )
-            })}
-          </ul>
+        <div className="px-4 pb-2 pt-16 lg:pt-5">
+          <p className="font-admin text-lg leading-none text-ink">Albarika</p>
+          <p className="mt-1 text-xs font-medium text-copy">Computer Institute</p>
         </div>
-
-        {/* Logout button at bottom */}
-               <div className="p-4 border-t border-blue-800">
-           <form onSubmit={handleLogout}>
-            <button
-              type="submit"
-              className="w-full flex items-center justify-center gap-3 p-3 font-semibold 
-                        transition-all tracking-wide hover:bg-blue-950 
-                        text-white rounded-md bg-blue-800"
-            >
-              <LogOut size={20} />
-              <span>Logout</span>
-            </button>
-          </form>
-        </div>
-      
+        <ul className="mt-4 flex-1 space-y-1 overflow-y-auto px-3">
+          {sideBarList.map((item) => {
+            const href = `/admin${item.link}`;
+            const isActive = item.link === "" ? pathname === "/admin" : pathname === href || pathname.startsWith(`${href}/`);
+            const Icon = item.icon;
+            return (
+              <li key={item.name}>
+                <Link
+                  href={href}
+                  onClick={closeSidebar}
+                  className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold ${
+                    isActive ? "bg-white text-ink shadow-sm" : "text-copy hover:bg-white/70"
+                  }`}
+                >
+                  <Icon className="size-4" />
+                  {item.name}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+        <form onSubmit={handleLogout} className="border-t border-black/5 p-3">
+          <button type="submit" className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-copy hover:bg-white/70">
+            <span className="grid size-8 place-items-center rounded-full bg-ink text-[11px] font-bold text-white">AC</span>
+            <span className="flex-1 text-left text-ink">Desk</span>
+            <LogOut className="size-4" />
+          </button>
+        </form>
       </nav>
 
-      {/* Main content */}
-      <main className="flex-1 overflow-hidden flex flex-col">
-        <div className="overflow-y-auto p-6 pt-20 lg:pt-6">
-          {children}
-        </div>
+      <main className="flex min-w-0 flex-1 flex-col overflow-hidden">
+        <div className="overflow-y-auto px-4 py-16 sm:px-8 lg:py-8">{children}</div>
       </main>
     </div>
-  )
+  );
 }

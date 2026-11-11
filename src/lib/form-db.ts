@@ -1,28 +1,8 @@
-import { DsqlSigner } from "@aws-sdk/dsql-signer";
 import { Client } from "pg";
-
-const region = process.env.AWS_REGION ?? "us-east-1";
-
-function endpoint() {
-  const host = process.env.DSQL_ENDPOINT;
-  if (!host) throw new Error("Missing DSQL_ENDPOINT");
-  return host;
-}
+import { connectDsql } from "@/lib/dsql";
 
 async function connect() {
-  const host = endpoint();
-  const signer = new DsqlSigner({ hostname: host, region });
-  const token = await signer.getDbConnectAdminAuthToken();
-  const client = new Client({
-    host,
-    port: 5432,
-    user: "admin",
-    password: token,
-    database: "postgres",
-    ssl: { rejectUnauthorized: true },
-  });
-  await client.connect();
-  return client;
+  return connectDsql();
 }
 
 let ready: Promise<void> | null = null;
@@ -46,7 +26,10 @@ export function ensureMessagesTable() {
     } finally {
       await client.end();
     }
-  })();
+  })().catch((error) => {
+    ready = null;
+    throw error;
+  });
   return ready;
 }
 
