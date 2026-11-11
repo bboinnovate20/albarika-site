@@ -43,11 +43,20 @@ export function loginCredentials() {
   });
 }
 
+function envCredentials() {
+  const accessKeyId = process.env.AWS_ACCESS_KEY_ID?.trim();
+  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY?.trim();
+  if (!accessKeyId || !secretAccessKey) return undefined;
+  const sessionToken = process.env.AWS_SESSION_TOKEN?.trim();
+  return { accessKeyId, secretAccessKey, sessionToken: sessionToken || undefined };
+}
+
 async function password(host: string) {
+  const credentials = envCredentials();
   try {
-    return await new DsqlSigner({ hostname: host, region }).getDbConnectAdminAuthToken();
+    return await new DsqlSigner({ hostname: host, region, ...(credentials ? { credentials } : {}) }).getDbConnectAdminAuthToken();
   } catch (error) {
-    if (process.env.VERCEL) throw error;
+    if (credentials || process.env.VERCEL) throw error;
     try {
       return await new DsqlSigner({ hostname: host, region, credentials: loginCredentials }).getDbConnectAdminAuthToken();
     } catch (cliError) {

@@ -15,13 +15,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ id }, { status: 201 });
   } catch (error) {
     const unknown = error instanceof Error && error.message === "Unknown course";
-    const name = error instanceof Error ? error.name : "unknown";
-    const message = error instanceof Error ? error.message.replace(/[\r\n]/g, " ").slice(0, 180) : "";
-    const safe = /AKIA|secret|token|password/i.test(message) ? "redacted" : message;
-    const code = typeof error === "object" && error && "code" in error ? String((error as { code?: unknown }).code).slice(0, 40) : "";
-    console.error("registration save failed", name, code, safe);
+    const name = error instanceof Error ? error.name : "Error";
+    const code = typeof error === "object" && error && "code" in error ? String((error as { code?: unknown }).code) : "";
+    const message = (error instanceof Error ? error.message : "Unknown error")
+      .replace(/[\r\n]/g, " ")
+      .replace(/AKIA[A-Z0-9]+/g, "[access-key]")
+      .replace(/ASIA[A-Z0-9]+/g, "[access-key]")
+      .slice(0, 400);
+    console.error("registration save failed", name, code, message);
     return NextResponse.json(
-      { error: unknown ? "Choose a course we are running." : "The registration could not be saved. Try again in a moment." },
+      {
+        error: unknown ? "Choose a course we are running." : "The registration could not be saved.",
+        detail: unknown ? undefined : [name, code, message].filter(Boolean).join(": "),
+      },
       { status: unknown ? 400 : 503 },
     );
   }

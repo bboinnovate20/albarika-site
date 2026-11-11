@@ -89,8 +89,8 @@ export function EnrolForm({
         body: JSON.stringify(values),
       });
       if (!response.ok) {
-        const data = await response.json().catch(() => null);
-        toast.error(data?.error || "We couldn't save that. Call us and we'll take it from there.");
+        const data = (await response.json().catch(() => null)) as { error?: string; detail?: string } | null;
+        toast.error(data?.detail || data?.error || "We couldn't save that. Call us and we'll take it from there.");
         return;
       }
       reset({ ...values, fullName: "", phone: "", email: "", address: "", guardianName: "", guardianPhone: "", note: "" });
