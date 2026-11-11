@@ -20,7 +20,9 @@ export async function POST(request: Request) {
     const safe = /AKIA|secret|token|password/i.test(message) ? "redacted" : message;
     const code = typeof error === "object" && error && "code" in error ? String((error as { code?: unknown }).code).slice(0, 40) : "";
     console.error("registration save failed", name, code, safe);
-    const reason = /credential|Could not load credentials|AWS login|Missing DSQL_ENDPOINT/i.test(message)
+    const reason = /Missing DSQL_ENDPOINT/i.test(message)
+      ? "missing-endpoint"
+      : /credential|Could not load credentials|AWS login/i.test(message)
       ? "login"
       : /not authorized|AccessDenied/i.test(message)
         ? "permission"
