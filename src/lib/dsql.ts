@@ -47,6 +47,7 @@ async function password(host: string) {
   try {
     return await new DsqlSigner({ hostname: host, region }).getDbConnectAdminAuthToken();
   } catch (error) {
+    if (process.env.VERCEL) throw error;
     try {
       return await new DsqlSigner({ hostname: host, region, credentials: loginCredentials }).getDbConnectAdminAuthToken();
     } catch (cliError) {
@@ -56,31 +57,48 @@ async function password(host: string) {
   }
 }
 
+function openClient(connectHost: string, servername: string, token: string) {
+  const client = new Client({
+    host: connectHost,
+    port: 5432,
+    user: "admin",
+    password: token,
+    database: "postgres",
+    connectionTimeoutMillis: 12000,
+    ssl: {
+      rejectUnauthorized: true,
+      servername,
+      checkServerIdentity: (_hostname, cert) => checkServerIdentity(servername, cert),
+    },
+  });
+  return client.connect().then(
+    () => client,
+    async (error: unknown) => {
+      await client.end().catch(() => undefined);
+      throw error;
+    },
+  );
+}
+
 export async function connectDsql() {
   const host = process.env.DSQL_ENDPOINT;
   if (!host) throw new Error("Missing DSQL_ENDPOINT");
-  const { address } = await lookup(host, { family: 4 });
+  const token = await password(host);
+  const targets: string[] = [];
+  if (process.env.VERCEL) targets.push(host);
+  try {
+    const { address } = await lookup(host, { family: 4 });
+    if (!targets.includes(address)) targets.push(address);
+  } catch (error) {
+    console.error("desk database address lookup failed", error instanceof Error ? error.name : "unknown");
+  }
+  if (!targets.includes(host)) targets.push(host);
   let last: unknown;
-  for (let attempt = 0; attempt < 3; attempt += 1) {
-    const client = new Client({
-      host: address,
-      port: 5432,
-      user: "admin",
-      password: await password(host),
-      database: "postgres",
-      connectionTimeoutMillis: 12000,
-      ssl: {
-        rejectUnauthorized: true,
-        servername: host,
-        checkServerIdentity: (_hostname, cert) => checkServerIdentity(host, cert),
-      },
-    });
+  for (const target of targets) {
     try {
-      await client.connect();
-      return client;
+      return await openClient(target, host, token);
     } catch (error) {
       last = error;
-      await client.end().catch(() => undefined);
     }
   }
   throw last;
