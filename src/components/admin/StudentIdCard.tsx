@@ -18,6 +18,7 @@ export type StudentIdCardData = {
   programme: string;
   months: number;
   issued: Date;
+  photo?: string;
 };
 
 const terms = [
@@ -125,7 +126,11 @@ export function StudentIdCardFaces({
           <div className="h-[30px]" />
           <div className="rounded-full border-[5px] border-[#f9b233] bg-white p-3">
             <div className="relative size-[212px] overflow-hidden rounded-full bg-[#e8f1ff]">
-              <img src="/id-card/silhouette.svg" alt="" width={165} height={165} className="absolute top-[47px] left-[23.5px]" />
+              {data.photo ? (
+                <img src={data.photo} alt="" className="size-full object-cover" />
+              ) : (
+                <img src="/id-card/silhouette.svg" alt="" width={165} height={165} className="absolute top-[47px] left-[23.5px]" />
+              )}
             </div>
           </div>
           <div className="h-[22px]" />

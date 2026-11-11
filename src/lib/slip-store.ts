@@ -10,7 +10,17 @@ function bucket() {
 let client: S3Client | null = null;
 
 function s3() {
-  client ??= new S3Client({ region, credentials: loginCredentials });
+  if (client) return client;
+  const accessKeyId = process.env.AWS_ACCESS_KEY_ID?.trim();
+  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY?.trim();
+  const sessionToken = process.env.AWS_SESSION_TOKEN?.trim();
+  client = new S3Client({
+    region,
+    credentials:
+      accessKeyId && secretAccessKey
+        ? { accessKeyId, secretAccessKey, ...(sessionToken ? { sessionToken } : {}) }
+        : loginCredentials,
+  });
   return client;
 }
 
@@ -63,6 +73,17 @@ export async function storeStudentPhoto(id: string, base64: string) {
 export async function readStudentPhoto(key: string) {
   if (!key.startsWith("student-photos/")) return "";
   return readObject(key);
+}
+
+export async function studentPhotoSrc(key: string) {
+  try {
+    const file = await readStudentPhoto(key);
+    if (!file) return "";
+    const type = key.endsWith(".png") ? "image/png" : "image/jpeg";
+    return `data:${type};base64,${file}`;
+  } catch {
+    return "";
+  }
 }
 
 async function readObject(key: string) {

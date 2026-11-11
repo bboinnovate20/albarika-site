@@ -14,7 +14,7 @@ export function StudentCardView({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <ConfettiBurst ref={burst} fireOnClick={false} count={140} colors={colors} className="mx-auto block w-full max-w-[420px]">
+    <ConfettiBurst ref={burst} fireOnClick={false} downward count={140} colors={colors} className="mx-auto block w-full max-w-[420px]">
       {children}
     </ConfettiBurst>
   );

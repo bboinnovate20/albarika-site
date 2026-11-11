@@ -35,6 +35,8 @@ type Props = {
   count?: number;
   /** Confine the confetti to this element (it must be position: relative). Default: viewport. */
   container?: RefObject<HTMLElement | null>;
+  /** Fall through the wrapped element instead of settling on its top edge. */
+  downward?: boolean;
   colors?: string[];
   className?: string;
 };
@@ -69,6 +71,7 @@ export function ConfettiBurst({
   fireOnClick = true,
   count = 120,
   container,
+  downward = false,
   colors = DEFAULT_COLORS,
   className,
 }: Props) {
@@ -134,7 +137,7 @@ export function ConfettiBurst({
           if (p.x > box.width) { p.x = box.width; p.vx = -Math.abs(p.vx) * 0.4; }
 
           // Land on top of the target while falling through its top edge
-          if (p.vy > 0 && prevY <= tTop && p.y >= tTop && p.x > tLeft + 4 && p.x < tRight - 4) {
+          if (!downward && p.vy > 0 && prevY <= tTop && p.y >= tTop && p.x > tLeft + 4 && p.x < tRight - 4) {
             p.y = tTop - p.h / 2;
             p.rest = p.x - tLeft;
             p.rot = (Math.random() - 0.5) * 0.6;
@@ -177,7 +180,7 @@ export function ConfettiBurst({
     };
 
     raf.current = requestAnimationFrame(frame);
-  }, []);
+  }, [downward]);
 
   const fire = useCallback(
     (opts?: { count?: number }) => {
@@ -193,12 +196,12 @@ export function ConfettiBurst({
       const n = opts?.count ?? count;
 
       for (let i = 0; i < n; i++) {
-        // Fan upward: mostly vertical, spread ±~55°
-        const angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.9;
-        const speed = 500 + Math.random() * 700;
+        // Upward fan, unless this burst is meant to fall down the page.
+        const angle = downward ? Math.PI / 2 + (Math.random() - 0.5) * 1.1 : -Math.PI / 2 + (Math.random() - 0.5) * 1.9;
+        const speed = downward ? 60 + Math.random() * 200 : 500 + Math.random() * 700;
         pieces.current.push({
-          x: ox + (Math.random() - 0.5) * r.width * 0.6,
-          y: oy,
+          x: ox + (Math.random() - 0.5) * r.width * (downward ? 0.9 : 0.6),
+          y: downward ? oy - Math.random() * 180 : oy,
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed,
           w: 4 + Math.random() * 4,
@@ -215,7 +218,7 @@ export function ConfettiBurst({
       if (raf.current) cancelAnimationFrame(raf.current);
       run();
     },
-    [count, colors, run],
+    [count, colors, downward, run],
   );
 
   useImperativeHandle(ref, () => ({ fire }), [fire]);

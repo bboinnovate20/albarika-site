@@ -3,6 +3,7 @@ import { institute } from "@/lib/landing";
 import { getRegistrationByCode } from "@/lib/repo/registrations";
 import { readStudentPhoto } from "@/lib/slip-store";
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -91,7 +92,15 @@ export default async function StudentCardPage({ params }: { params: Promise<{ co
 
   return (
     <main className="min-h-screen bg-[#e8f1ff] px-4 py-8">
-      {registration ? <StudentCardView>{card}</StudentCardView> : <div className="mx-auto w-full max-w-[420px]">{card}</div>}
+      <div className="mx-auto flex w-full max-w-[420px] flex-col items-center">
+        {registration ? <StudentCardView>{card}</StudentCardView> : card}
+        <Link
+          href="/"
+          className="mt-6 inline-flex items-center justify-center rounded-full bg-ink px-5 py-3 text-sm font-semibold text-white transition-[background-color,scale] duration-150 ease-out hover:bg-[#1e2f7a] active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+        >
+          Visit page
+        </Link>
+      </div>
     </main>
   );
 }

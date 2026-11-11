@@ -3,6 +3,7 @@ import { PriceText, PriceToggle } from "@/components/admin/PriceVisibility";
 import { paymentStatusLabels, registrationStatusLabels } from "@/lib/registration-schema";
 import { publicCourses } from "@/lib/repo/courses";
 import { getRegistration } from "@/lib/repo/registrations";
+import { studentPhotoSrc } from "@/lib/slip-store";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -27,6 +28,7 @@ export default async function RegistrationPage({ params }: { params: Promise<{ i
   if (!problem && !registration) notFound();
   const courses = await publicCourses().catch(() => []);
   const chat = registration ? whatsapp(registration.phone) : "";
+  const photograph = registration?.photoKey ? await studentPhotoSrc(registration.photoKey) : "";
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -59,7 +61,7 @@ export default async function RegistrationPage({ params }: { params: Promise<{ i
               </a>
             )}
           </div>
-          <RegistrationForm registration={registration} courses={courses} />
+          <RegistrationForm registration={registration} courses={courses} photograph={photograph} />
         </>
       )}
     </div>
