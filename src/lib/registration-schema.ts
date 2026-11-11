@@ -29,6 +29,7 @@ const details = {
   phone: z.string().trim().min(10, "Enter a phone number we can call").max(20, "That phone number is too long"),
   email: z.string().trim().email("Enter a valid email").optional().or(z.literal("")),
   gender: z.enum(["Female", "Male"]).optional().or(z.literal("")),
+  address: z.string().trim().max(200, "That address is too long").optional().or(z.literal("")),
   courseId: z.string().trim().min(1, "Choose a course"),
   feeId: z.string().trim().max(80).optional().or(z.literal("")),
   months: z.coerce.number().int().positive("Choose a course length"),

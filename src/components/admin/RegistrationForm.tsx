@@ -57,6 +57,7 @@ export function RegistrationForm({ registration, courses }: { registration: Stor
           phone: form.phone,
           email: form.email,
           gender: form.gender,
+          address: form.address,
           courseId: form.courseId,
           feeId: chosenFee?.id ?? "",
           months: Number(form.months),
@@ -171,6 +172,10 @@ export function RegistrationForm({ registration, courses }: { registration: Stor
             <option value="Female">Female</option>
             <option value="Male">Male</option>
           </select>
+        </label>
+        <label className="block sm:col-span-2">
+          <span className="text-sm font-bold text-ink">Address</span>
+          <input className={`${fieldClass} mt-2`} value={form.address} autoComplete="street-address" placeholder="Street, area, and city" onChange={(event) => set("address", event.target.value)} />
         </label>
         <label className="block">
           <span className="text-sm font-bold text-ink">Student ID</span>

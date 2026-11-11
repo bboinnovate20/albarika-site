@@ -53,6 +53,7 @@ export function EnrolForm({
       phone: "",
       email: "",
       gender: "",
+      address: "",
       courseId: initialCourse?.id ?? "",
       feeId: initialOption?.id ?? "",
       months: initialOption?.months ?? 0,
@@ -92,7 +93,7 @@ export function EnrolForm({
         toast.error(data?.error || "We couldn't save that. Call us and we'll take it from there.");
         return;
       }
-      reset({ ...values, fullName: "", phone: "", email: "", guardianName: "", guardianPhone: "", note: "" });
+      reset({ ...values, fullName: "", phone: "", email: "", address: "", guardianName: "", guardianPhone: "", note: "" });
       setSent(true);
     },
     (fieldErrors) => {
@@ -132,6 +133,9 @@ export function EnrolForm({
                 <option value="Male">Male</option>
               </select>
             </SelectWrap>
+          </Field>
+          <Field label="Address" id="address" error={errors.address?.message} shaking={shaking.includes("address")}>
+            <input id="address" className={controlClass(Boolean(errors.address))} autoComplete="street-address" placeholder="Street, area, and city" aria-invalid={Boolean(errors.address)} {...register("address")} />
           </Field>
           <div className="grid gap-5 sm:grid-cols-2">
             <Field label="Course" id="courseId" error={errors.courseId?.message} shaking={shaking.includes("courseId")}>

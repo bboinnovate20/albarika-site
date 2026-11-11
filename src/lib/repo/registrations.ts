@@ -23,6 +23,7 @@ async function ensureRegistrations(client: Client) {
       phone TEXT NOT NULL,
       email TEXT,
       gender TEXT,
+      address TEXT,
       course_id TEXT NOT NULL,
       course_title TEXT NOT NULL,
       months INTEGER NOT NULL,
@@ -37,6 +38,7 @@ async function ensureRegistrations(client: Client) {
       paid_naira INTEGER
     )
   `);
+  await client.query(`ALTER TABLE registrations ADD COLUMN IF NOT EXISTS address TEXT`);
   await client.query(`ALTER TABLE registrations ADD COLUMN IF NOT EXISTS photo_key TEXT`);
   await client.query(`ALTER TABLE registrations ADD COLUMN IF NOT EXISTS fee_id TEXT`);
   await client.query(`ALTER TABLE registrations ADD COLUMN IF NOT EXISTS payment TEXT`);
@@ -90,6 +92,7 @@ type RegistrationRow = {
   phone: string;
   email: string | null;
   gender: string | null;
+  address: string | null;
   course_id: string;
   course_title: string;
   months: number;
@@ -114,6 +117,7 @@ export type StoredRegistration = {
   phone: string;
   email: string;
   gender: string;
+  address: string;
   courseId: string;
   courseTitle: string;
   months: number;
@@ -139,6 +143,7 @@ function mapRow(row: RegistrationRow): StoredRegistration {
     phone: row.phone,
     email: row.email ?? "",
     gender: row.gender ?? "",
+    address: row.address ?? "",
     courseId: row.course_id,
     courseTitle: row.course_title,
     months: row.months,
@@ -155,7 +160,7 @@ function mapRow(row: RegistrationRow): StoredRegistration {
   };
 }
 
-const columns = `id, created_at, updated_at, status, full_name, phone, email, gender, course_id, course_title, months, fee_naira, guardian_name, guardian_phone, note, desk_note, student_code, photo_key, fee_id, payment, paid_naira`;
+const columns = `id, created_at, updated_at, status, full_name, phone, email, gender, address, course_id, course_title, months, fee_naira, guardian_name, guardian_phone, note, desk_note, student_code, photo_key, fee_id, payment, paid_naira`;
 
 async function courseChoice(courseId: string, months: number, feeId = "") {
   const courses = await publicCourses();
@@ -190,7 +195,7 @@ export async function createRegistration(input: RegistrationInput, photoBase64 =
   await withRegistrations((client) =>
     client.query(
       `INSERT INTO registrations (${columns})
-       VALUES ($1, $2, $2, 'pending', $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, '', NULL, $14, $15, 'unpaid', 0)`,
+       VALUES ($1, $2, $2, 'pending', $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, '', NULL, $15, $16, 'unpaid', 0)`,
       [
         id,
         now,
@@ -198,6 +203,7 @@ export async function createRegistration(input: RegistrationInput, photoBase64 =
         input.phone,
         blank(input.email),
         blank(input.gender),
+        blank(input.address),
         choice.course.id,
         choice.course.title,
         choice.option.months,
@@ -294,10 +300,10 @@ export async function updateRegistration(id: string, input: RegistrationUpdate) 
     const save = (code: string) =>
       client.query(
         `UPDATE registrations
-         SET updated_at = $2, status = $3, full_name = $4, phone = $5, email = $6, gender = $7,
-             course_id = $8, course_title = $9, months = $10,
-             guardian_name = $11, guardian_phone = $12, note = $13, desk_note = $14, student_code = $15, fee_id = $16,
-             payment = $17, paid_naira = $18
+         SET updated_at = $2, status = $3, full_name = $4, phone = $5, email = $6, gender = $7, address = $8,
+             course_id = $9, course_title = $10, months = $11,
+             guardian_name = $12, guardian_phone = $13, note = $14, desk_note = $15, student_code = $16, fee_id = $17,
+             payment = $18, paid_naira = $19
          WHERE id = $1`,
         [
           id,
@@ -307,6 +313,7 @@ export async function updateRegistration(id: string, input: RegistrationUpdate) 
           input.phone,
           blank(input.email),
           blank(input.gender),
+          blank(input.address),
           choice.course.id,
           choice.course.title,
           choice.option.months,
