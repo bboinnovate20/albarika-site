@@ -27,8 +27,8 @@ export const courses: Course[] = [
   {
     id: "desktop-publishing",
     slug: "desktop-publishing",
-    title: "Desktop Publishing",
-    summary: "Design flyers, reports and layouts, then print them cleanly.",
+    title: "Digital Literacy and Computer Skills",
+    summary: "Computer fundamentals.",
     options: [
       { id: "desktop-publishing-3", months: 3, feeNaira: 25000 },
       { id: "desktop-publishing-6", months: 6, feeNaira: 45000 },

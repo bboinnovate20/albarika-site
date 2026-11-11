@@ -23,7 +23,7 @@ export default function CoursesSection({ courses }: { courses: Course[] }) {
             Courses you can start this term
           </h2>
           <p className="t-stagger-line t-stagger-line--2 mt-4 text-[17px] font-medium leading-7 text-copy">
-            The programmes we are running, with the fees we charge today. A part payment opens the starter PDFs. Paying in full opens every PDF and your ID card.
+            The programmes we are running, with the fees we charge today.
           </p>
         </div>
 
@@ -51,9 +51,6 @@ export default function CoursesSection({ courses }: { courses: Course[] }) {
                   <Naira value={option.feeNaira} />
                 </p>
               </div>
-              <p className="mt-4 text-sm font-medium text-copy">
-                Partial payment opens starter PDFs. Full payment opens every PDF and your ID card.
-              </p>
               <Link
                 href={`/enrol?course=${publishing.slug}&months=${option.months}`}
                 className="mt-6 inline-flex rounded-full bg-ink px-5 py-3 text-sm font-semibold text-white transition-[background-color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-[#1e2f7a] active:scale-[0.97]"
